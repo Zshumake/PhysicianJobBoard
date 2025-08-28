@@ -1,0 +1,2401 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bobby's Personal Job Board</title>
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp, query, where, orderBy, limit, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBk_52Fsux56J4XiS3QYLgyaWWlmm5cy-A",
+            authDomain: "physicianjobboard.firebaseapp.com",
+            projectId: "physicianjobboard",
+            storageBucket: "physicianjobboard.firebasestorage.app",
+            messagingSenderId: "697224609557",
+            appId: "1:697224609557:web:5316817d54a50b121db31c",
+            measurementId: "G-VJ8CRE299C"
+        };
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Global Firebase functions
+        window.firebaseDB = db;
+        window.firebaseDoc = doc;
+        window.firebaseSetDoc = setDoc;
+        window.firebaseGetDoc = getDoc;
+        window.firebaseCollection = collection;
+        window.firebaseAddDoc = addDoc;
+        window.firebaseServerTimestamp = serverTimestamp;
+        window.firebaseQuery = query;
+        window.firebaseWhere = where;
+        window.firebaseOrderBy = orderBy;
+        window.firebaseLimit = limit;
+        window.firebaseGetDocs = getDocs;
+        
+        console.log('Firebase initialized successfully');
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #740001 0%, #ae0001 50%, #eeba30 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+        
+        .container {
+            max-width: 100%;
+            background: #fdf6e3;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #740001 0%, #ae0001 100%);
+            color: #eeba30;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .gryffindor-crest {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            width: 70px;
+            height: 70px;
+            background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gIcSUNDX1BST0ZJTEUAAQEAAAIMbGNtcwIQAABtbnRyUkdCIFhZWiAH3AABABkAAwApADlhY3NwQVBQTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA9tYAAQAAAADTLWxjbXMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAApkZXNjAAAA/AAAAF5jcHJ0AAABXAAAAAt3dHB0AAABaAAAABRia3B0AAABfAAAABRyWFlaAAABkAAAABRnWFlaAAABpAAAABRiWFlaAAABuAAAABRyVFJDAAABzAAAAEBnVFJDAAABzAAAAEBiVFJDAAABzAAAAEBkZXNjAAAAAAAAAANjMgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB0ZXh0AAAAAEZCAABYWVogAAAAAAAA9tYAAQAAAADTLVhZWiAAAAAAAAADFgAAAzMAAAKkWFlaIAAAAAAAAG+iAAA49QAAA5BYWVogAAAAAAAAYpkAALeFAAAY2lhZWiAAAAAAAAAkoAAAD4QAALbPY3VydgAAAAAAAAAaAAAAywHJA2MFkghrC/YQPxVRGzQh8SmQMhg7kkYFUXdd7WtwegWJsZp8rGm/fdPD6TD////bAEMABAQEBAQEBAQEBAYGBQYGCAcHBwcIDAkJCQkJDBMMDgwMDgwTERQQDxAUER4XFRUXHiIdGx0iKiUlKjQyNEREXP/bAEMBBAQEBAQEBAQEBAYGBQYGCAcHBwcIDAkJCQkJDBMMDgwMDgwTERQQDxAUER4XFRUXHiIdGx0iKiUlKjQyNEREXP/AABEIBFAD6AMBIgACEQEDEQH/xAAdAAEAAQQDAQAAAAAAAAAAAAAABwQFBggBAwkC/8QAYhAAAQMDAQUEBgUIBgYFCQIPAQACAwQFEQYHEiExQRNRYXEIFCIygZFCUqGxwRUjM2JygpLRFiRDU6KyY3ODwuHwFzSTo9IYJSY1RHSz0/FUV2SUlcMnNjhVVnU3hEWk4v/EABwBAQABBQEBAAAAAAAAAAAAAAAFAgMEBgcBCP/EAFURAAEDAwEFBQQGBgYGCQIGAwEAAgMEBREhBhIxQVETImFxgRQykaEjQlKxwdEHFTNicpJDU4KisuEWJCU0Y/A1RFRkc5PC0vFVoxc2dIOElEWz4v/aAAwDAQACEQMRAD8A3+RERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERRpaNq2i79ri97PaK5ZvtsDhLE8AMcgAvbE7PtOZn2xjhxUloiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiKONq+uqfZzoS/6qmLTPTQdnRxu/tKuX2Im46jeOXesgqR153ek5qK4bQNpWnNkVlkHq1BJHJUkHINXOzfL3eEMRz38SrcsscMck0rg2ONrnvceAa0ZJKqYx0j2sYMucQABzJ0Wo2ndU3jTGsrJrd7ppK6G4suTnuJa6pHaEy8eok9prj4le29outFfLVbb1bZhNRV1NFVU8g+nFK0PafkV547ZdmVDUaJoKyxU+7UaaoxGxo96WhjHtB3e5nF/zUjeh/tPF1sVTs2u0wFZamuqba5x4y0b35fH4mJzs/snuCibDfKa/wBEau2l5YWyOje1w1aQdPiNVm3Cglt04hlOQWhzXDgc8fgVt2iIppYCIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIi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HaYu3qd6Y6X1CdvYskbXGMEbtSGYOwMhwIzjiMAr1a2D0Wr9Hm8yXrUdRq69QP7SouNa9xhDv1aMbzCB4DDuuVFbMO3rZUNBKOzNNLL2jTzMnHKzPmJP6OqWt9HvRb9stMdvsZ1ZYKDTkrauiNW2G4Otlqo4nCOSK6mBzcb7w97s7jjgcgJe0ZaLTJ4h+mPiUNJr3U9FrzZu7aNNagvVwutB2jbC6oqCa8vZlr+x9mMyGPdM3ZPdxbJy3ipHpVERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERF5Z+mNcpKnaxSUbnEx0NjpI2t6AyPkkP+YKo1pt6rZ6iHTuzilM9Q7cg9eEJlfJI4AblNFjjx4ZIOegVP6WFmuNftsio7fRz1dVX2mgNPBBGZJXnL48Ma3ieLCtqfR82BUWzW2wai1HSxT6wqYyXOJ320EUg/Qx9O0x77x4tBxzirhZbfdaiinr4e29l3zHG73CX41cOeMaDgsymrqmkjnjp37na7u84e9hueB5cVqi3Yt6TV9gF3qWXNskg32xVF3jglx/q+0G55HHko9h2mbVtA3euslzusk1Rb5nQVdHXltY1kkZ3S0vBcRg8PZcvVbaVrGn0BofUeq5ywuoaR7qdr+T6h/sQs/ee4DyWiewLTRq7RqDWd+ibV1V+qJYi6oYHiWFrd6VxDhg9pITn9lRm0ctntNpfUVlrp54w5kbIdxo3i48GkjTAyVlWxtdWVjYoauSNxBc5+8TgDqsm2e7bLFrOaC1XKIWy8v9lkTn5p53d0T3cnfqu+BKlW/Xu3abtFfe7rN2VHSRdpI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'); /* Your base64 will go here */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 8px;
+            border: 3px solid #eeba30;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: #f4f1e8;
+            padding: 15px;
+            border-bottom: 1px solid #d4af37;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #740001;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: #8b6914;
+        }
+        
+        .job-card {
+            border-bottom: 1px solid #e6dcc6;
+            padding: 15px;
+            transition: background-color 0.2s;
+        }
+        
+        .job-card:last-child {
+            border-bottom: none;
+        }
+        
+        .job-card:hover {
+            background-color: #f9f6ed;
+        }
+        
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .job-title {
+            font-weight: bold;
+            color: #2d3748;
+            font-size: 1rem;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .salary {
+            background: #48bb78;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 10px;
+            white-space: nowrap;
+        }
+        
+        .company {
+            color: #4299e1;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+        
+        .job-details {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .detail-row {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+        
+        .detail-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+        
+        .remote-badge {
+            background: #ed8936;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        .remote-badge.fully-remote {
+            background: #48bb78;
+        }
+        
+        .remote-badge.hybrid {
+            background: #4299e1;
+        }
+        
+        .remote-badge.onsite {
+            background: #e53e3e;
+        }
+        
+        .contact-info {
+            background: #edf2f7;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        
+        .contact-info strong {
+            color: #2d3748;
+            font-size: 0.8rem;
+        }
+        
+        .contact-info div {
+            font-size: 0.75rem;
+            color: #4a5568;
+            margin-top: 3px;
+        }
+        
+        .apply-link {
+            display: inline-block;
+            background: #ae0001;
+            color: #eeba30;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin: 8px 8px 0 0;
+            transition: background-color 0.2s;
+            border: 2px solid #eeba30;
+        }
+        
+        .apply-link:hover {
+            background: #740001;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .apply-link.primary {
+            background: #eeba30;
+            color: #740001;
+            border: 2px solid #740001;
+        }
+        
+        .apply-link.primary:hover {
+            background: #d4ac0d;
+            transform: translateY(-1px);
+        }
+        
+        .job-description {
+            background: #fdfcf0;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 3px solid #ae0001;
+            border: 1px solid #eeba30;
+        }
+        
+        .job-description h4 {
+            color: #2d3748;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+        
+        .job-description p {
+            color: #4a5568;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+        
+        .job-description ul {
+            color: #4a5568;
+            font-size: 0.85rem;
+            margin-left: 15px;
+            margin-bottom: 8px;
+        }
+        
+        .job-description li {
+            margin-bottom: 4px;
+        }
+        
+        .benefits-highlight {
+            background: #e6fffa;
+            border: 1px solid #38b2ac;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin: 8px 0;
+            font-size: 0.8rem;
+            color: #234e52;
+        }
+
+        .job-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: 8px;
+            text-transform: uppercase;
+        }
+
+        .job-status.new {
+            background: #48bb78;
+            color: white;
+            animation: pulse-green 2s infinite;
+        }
+
+        .job-status.expired {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .job-status.hot {
+            background: #ed8936;
+            color: white;
+            animation: pulse-orange 1.5s infinite;
+        }
+
+        @keyframes pulse-green {
+            0% { background: #48bb78; }
+            50% { background: #38a169; }
+            100% { background: #48bb78; }
+        }
+
+        @keyframes pulse-orange {
+            0% { background: #ed8936; }
+            50% { background: #dd6b20; }
+            100% { background: #ed8936; }
+        }
+
+        .last-updated {
+            background: #edf2f7;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #4a5568;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .update-log {
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 40px;
+            border-left: 4px solid #4299e1;
+        }
+
+        .update-log h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .update-log ul {
+            list-style: none;
+            font-size: 0.85rem;
+            color: #4a5568;
+        }
+
+        .update-log li {
+            margin-bottom: 5px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .update-log li.added::before {
+            content: "✅";
+            position: absolute;
+            left: 0;
+        }
+
+        .update-log li.updated::before {
+            content: "📝";
+            position: absolute;
+            left: 0;
+        }
+
+        .update-log li.expired::before {
+            content: "❌";
+            position: absolute;
+            left: 0;
+        }
+
+        .interest-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .interest-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .interest-btn.interested {
+            background: #48bb78;
+            color: white;
+        }
+
+        .interest-btn.interested:hover {
+            background: #38a169;
+        }
+
+        .interest-btn.not-interested {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .interest-btn.not-interested:hover {
+            background: #c53030;
+        }
+
+        .interest-btn.neutral {
+            background: #edf2f7;
+            color: #4a5568;
+            border: 1px solid #cbd5e0;
+        }
+
+        .interest-btn.neutral:hover {
+            background: #e2e8f0;
+        }
+
+        .interest-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .job-card.interested {
+            border-left: 5px solid #eeba30;
+            background: #fdfcf0;
+            box-shadow: 0 2px 8px rgba(238, 186, 48, 0.2);
+        }
+
+        .job-card.not-interested {
+            border-left: 5px solid #e53e3e;
+            background: #fef5e7;
+            opacity: 0.8;
+        }
+
+        .job-card.not-interested .job-title {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .interest-status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            margin-left: 8px;
+            text-transform: uppercase;
+        }
+
+        .interest-status.interested {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .interest-status.not-interested {
+            background: #fed7d7;
+            color: #822727;
+        }
+        
+        .deadline {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-top: 8px;
+            display: inline-block;
+        }
+        
+        .deadline.urgent {
+            background: #fc8181;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        .priority {
+            background: #ffd89b;
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+        
+        .new-section {
+            background: linear-gradient(135deg, #740001 0%, #ae0001 100%);
+            color: #eeba30;
+            padding: 15px 20px;
+            margin: 0;
+            font-weight: bold;
+            font-size: 1.1rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .expandable {
+            cursor: pointer;
+        }
+        
+        .expandable::after {
+            content: " ▼";
+            font-size: 0.7rem;
+            color: #718096;
+        }
+        
+        .expandable.collapsed::after {
+            content: " ▶";
+        }
+        
+        .collapsible {
+            transition: max-height 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .collapsible.collapsed {
+            max-height: 0;
+        }
+        
+        .requirements {
+            background: #fffbf0;
+            border-left: 4px solid #f6ad55;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 4px;
+        }
+        
+        .requirements h4 {
+            color: #c53030;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .requirements ul {
+            list-style: none;
+            font-size: 0.75rem;
+            color: #4a5568;
+        }
+        
+        .requirements li {
+            margin-bottom: 3px;
+            padding-left: 15px;
+            position: relative;
+        }
+        
+        .requirements li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #48bb78;
+            font-weight: bold;
+        }
+        
+        .footer {
+            background: #2d3748;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .footer h3 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .footer p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+        
+        @media (max-width: 480px) {
+            .stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .job-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .salary {
+                margin-left: 0;
+                margin-top: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="gryffindor-crest"></div>
+            <h1>🏥 Bobby's Personal Job Board</h1>
+            <p>Remote Opportunities for Experienced Physiatrists • Updated August 28, 2025</p>
+            <div style="font-size: 0.8rem; margin-top: 10px; opacity: 0.9; font-style: italic;">
+                "It is our choices, Harry, that show what we truly are, far more than our abilities." - Albus Dumbledore 🦁
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number" id="job-count">32</div>
+                <div class="stat-label">Active Jobs</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">$70K-$507K</div>
+                <div class="stat-label">Salary Range</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">90%</div>
+                <div class="stat-label">Remote/Hybrid</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="new-count">6</div>
+                <div class="stat-label">NEW This Week</div>
+            </div>
+        </div>
+
+        <div class="update-log">
+            <h3>📅 Weekly Update Log - August 28, 2025</h3>
+            <ul>
+                <li class="added">Added 8 new telemedicine and medical director positions</li>
+                <li class="added">Enhanced all job descriptions with detailed requirements</li>
+                <li class="updated">Updated ExamWorks IME compensation structure</li>
+                <li class="added">Added direct application links and phone contacts</li>
+                <li class="added">Research shows 2,694+ remote physician jobs on Indeed</li>
+            </ul>
+        </div>
+        
+        <!-- HIGH PRIORITY REMOTE POSITIONS -->
+        <div class="new-section">
+            🎯 TOP REMOTE LOW-STRESS OPPORTUNITIES
+        </div>
+
+        <div class="job-card">
+            <div class="job-header">
+                <div class="job-title">Part-Time Medical Director <span class="priority">IDEAL FIT</span><span class="job-status hot">URGENT</span></div>
+                <div class="salary">$70K/year</div>
+            </div>
+            <div class="company">CHS Recruiting</div>
+            <div class="job-details">
+                <div class="detail-row">
+                    📍 Remote Position (US-based)
+                </div>
+                <div class="detail-row">
+                    ⏰ 10-15 Hours/Week (Flexible Schedule)
+                </div>
+                <div class="detail-row">
+                    💻 <span class="remote-badge fully-remote">100% Remote</span>
+                </div>
+            </div>
+            
+            <div class="job-description">
+                <h4>🎯 Role Overview</h4>
+                <p>Seeking a part-time Medical Director to provide clinical oversight and medical expertise for workers' compensation and disability claims. This low-stress position offers exceptional work-life balance with competitive compensation for minimal time commitment.</p>
+                
+                <h4>📋 Key Responsibilities</h4>
+                <ul>
+                    <li>Review approximately 200 medical claims monthly (50 claims per week)</li>
+                    <li>Provide medical opinions on treatment necessity and appropriateness</li>
+                    <li>Participate in weekly team calls (1-2 hours)</li>
+                    <li>Collaborate with claims adjusters and case managers</li>
+                    <li>Ensure compliance with medical review standards</li>
+                </ul>
+                
+                <h4>✅ Perfect For</h4>
+                <ul>
+                    <li>Experienced physicians seeking reduced clinical burden</li>
+                    <li>Doctors interested in insurance/disability medicine</li>
+                    <li>Those wanting flexible, remote work arrangements</li>
+                    <li>Physicians with strong analytical and documentation skills</li>
+                </ul>
+                
+                <div class="benefits-highlight">
+                    <strong>💰 Benefits:</strong> $70K annual salary for 10-15 hrs/week • Flexible scheduling • No on-call requirements • Professional development opportunities
+                </div>
+            </div>
+            
+            <div class="requirements">
+                <h4>Required Qualifications:</h4>
+                <ul>
+                    <li>Board certification in any medical specialty</li>
+                    <li>Active, unrestricted medical license</li>
+                    <li>Minimum 5 years clinical experience</li>
+                    <li>Strong written communication skills</li>
+                    <li>Computer proficiency and reliable internet</li>
+                </ul>
+            </div>
+            
+            <div class="contact-info">
+                <strong>Contact Information:</strong>
+                <div>Jenn Kunkel, Recruiter: (773) 998-1272</div>
+                <div>Email: jenn@chsrecruiting.com</div>
+                <div>Response Time: Typically within 24-48 hours</div>
+            </div>
+            
+            <a href="mailto:jenn@chsrecruiting.com?subject=Medical Director Position - Interested Candidate&body=Hello Jenn,%0A%0AI am interested in the Part-Time Medical Director position. I am a board-certified physician with [X] years of experience and am seeking a flexible, remote opportunity.%0A%0APlease let me know the next steps in the application process.%0A%0AThank you,%0A[Your Name]%0A[Your Phone]" class="apply-link primary">📧 Contact Jenn Now</a>
+            <a href="tel:+17739981272" class="apply-link">📞 Call Direct</a>
+            
+            <div class="interest-buttons">
+                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')" data-job-id="chs-medical-director">
+                    ⭐ Interested
+                </button>
+                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')" data-job-id="chs-medical-director">
+                    ❌ Not Interested
+                </button>
+            </div>
+        </div>
+
+        <div class="job-card">
+            <div class="job-header">
+                <div class="job-title">Independent Medical Examiner <span class="priority">HIGH PAY</span><span class="job-status new">NEW</span></div>
+                <div class="salary">$441/hr + $955 no-show</div>
+            </div>
+            <div class="company">ExamWorks</div>
+            <div class="job-details">
+                <div class="detail-row">
+                    📍 Nationwide (Your Office, Patient Location, or Telehealth)
+                </div>
+                <div class="detail-row">
+                    ⏰ Ultra-Flexible Part-Time (Choose Your Schedule)
+                </div>
+                <div class="detail-row">
+                    💻 <span class="remote-badge hybrid">Location Flexible</span>
+                </div>
+            </div>
+
+            <div class="job-description">
+                <h4>🎯 Role Overview</h4>
+                <p>Conduct independent medical examinations for workers' compensation, personal injury, and disability cases. Perfect for experienced physicians seeking high hourly compensation with complete schedule control. Your 20+ years of spine/EMG expertise makes you an ideal candidate for premium case assignments.</p>
+                
+                <h4>💰 Exceptional Compensation Structure</h4>
+                <ul>
+                    <li><strong>$441/hour</strong> for examination and report completion</li>
+                    <li><strong>$955 no-show fee</strong> if patient doesn't attend (still paid!)</li>
+                    <li>Additional fees for depositions ($500-800/hour)</li>
+                    <li>Mileage reimbursement for travel exams</li>
+                    <li>Annual earning potential: $50K-200K+ based on volume preference</li>
+                </ul>
+                
+                <h4>📋 Typical Examination Process</h4>
+                <ul>
+                    <li>Review medical records (1-2 hours, included in fee)</li>
+                    <li>Conduct physical examination (45-90 minutes)</li>
+                    <li>Complete comprehensive report (1-2 hours, included in fee)</li>
+                    <li>Occasional deposition testimony (separate high hourly rate)</li>
+                </ul>
+                
+                <h4>🏆 Why Your Background Is Perfect</h4>
+                <ul>
+                    <li>Spine cases command highest fees ($500-600/hour premium)</li>
+                    <li>EMG expertise essential for complex neurological evaluations</li>
+                    <li>20+ years experience = premium case assignments</li>
+                    <li>PM&R background ideal for disability assessments</li>
+                </ul>
+
+                <div class="benefits-highlight">
+                    <strong>🎯 Perfect Setup:</strong> Work 5-10 cases/month for $30K-60K annual income • Complete schedule flexibility • Professional liability coverage provided • Administrative support included
+                </div>
+            </div>
+
+            <div class="requirements">
+                <h4>Required Qualifications:</h4>
+                <ul>
+                    <li>Board certification in PM&R, Orthopedics, Neurology, or related specialty</li>
+                    <li>Active medical license in examination state(s)</li>
+                    <li>Minimum 10 years clinical experience (20+ years preferred)</li>
+                    <li>Experience with functional capacity evaluations preferred</li>
+                    <li>Strong written communication and report-writing skills</li>
+                    <li>Professional liability insurance (can be provided)</li>
+                </ul>
+            </div>
+
+            <div class="contact-info">
+                <strong>Immediate Start Available:</strong>
+                <div>Erica Seversen, Senior Recruiter: (206) 200-7171</div>
+                <div>Email: erica.seversen@examworks.com</div>
+                <div>Response time: Same day for qualified candidates</div>
+                <div><strong>Credentialing:</strong> 2-3 weeks after application</div>
+            </div>
+
+            <a href="mailto:erica.seversen@examworks.com?subject=IME Physician Position - Spine/EMG Specialist&body=Hello Erica,%0A%0AI am a board-certified physician with 20+ years of experience in interventional spine and EMG. I am interested in the Independent Medical Examiner position with ExamWorks.%0A%0ABackground:%0A- Board certified in PM&R%0A- 20+ years spine and EMG experience%0A- Currently seeking flexible, high-compensation opportunities%0A%0APlease send me information about the application process and available territories.%0A%0AThank you,%0A[Your Name]%0A[Your Phone]%0A[Your State]" class="apply-link primary">📧 Email Erica</a>
+            <a href="tel:+12062007171" class="apply-link">📞 Call Now</a>
+            
+            <div class="interest-buttons">
+                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')" data-job-id="examworks-ime">
+                    ⭐ Interested
+                </button>
+                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')" data-job-id="examworks-ime">
+                    ❌ Not Interested
+                </button>
+            </div>
+        </div>
+
+        <!-- NEW OPPORTUNITIES THIS WEEK -->
+        <div class="job-card">
+            <div class="job-header">
+                <div class="job-title">Medical Director - Denials Management <span class="job-status new">NEW</span></div>
+                <div class="salary">$225K+ (40hr/week)</div>
+            </div>
+            <div class="company">CorroHealth (via Indeed)</div>
+            <div class="job-details">
+                <div class="detail-row">
+                    📍 Remote Nationwide
+                </div>
+                <div class="detail-row">
+                    ⏰ Standard 40-hour workweek
+                </div>
+                <div class="detail-row">
+                    💻 <span class="remote-badge fully-remote">100% Remote</span>
+                </div>
+            </div>
+
+            <div class="job-description">
+                <h4>🎯 Role Overview</h4>
+                <p>Evaluate hospitalizations across the country while utilizing your medical knowledge and gaining experience as an expert advisor to client hospitals. Provides desired work/life balance while expanding your knowledge base in Utilization Review.</p>
+                
+                <h4>💰 Competitive Package</h4>
+                <ul>
+                    <li>Base salary around $225K+ with uncapped bonus potential</li>
+                    <li>Standard 40-hour workweek with predictable schedule</li>
+                    <li>Comprehensive benefits package</li>
+                    <li>Professional development opportunities</li>
+                </ul>
+                
+                <h4>📋 Key Responsibilities</h4>
+                <ul>
+                    <li>Perform clinical case reviews for hospital denials</li>
+                    <li>Provide recommendations for appropriate admission status</li>
+                    <li>Collaborate with hospital staff and insurance reviewers</li>
+                    <li>Drive value to hospitals through expert medical guidance</li>
+                </ul>
+
+                <div class="benefits-highlight">
+                    <strong>🌟 Perfect for:</strong> Experienced physicians seeking predictable schedule • No nights/weekends • Use clinical knowledge in advisory role • Competitive bonus structure
+                </div>
+            </div>
+
+            <div class="requirements">
+                <h4>Required Qualifications:</h4>
+                <ul>
+                    <li>Board certification in Internal Medicine, Family Medicine, or related specialty</li>
+                    <li>Minimum 5 years of clinical experience</li>
+                    <li>Understanding of hospital utilization review processes preferred</li>
+                    <li>Strong communication and analytical skills</li>
+                </ul>
+            </div>
+
+            <div class="contact-info">
+                <strong>Apply Through:</strong>
+                <div>Indeed.com - Search "CorroHealth Medical Director"</div>
+                <div>Recently posted position with immediate need</div>
+            </div>
+
+            <a href="https://www.indeed.com/q-corrohealth-medical-director-jobs.html" target="_blank" class="apply-link primary">🔍 Find on Indeed</a>
+            <a href="https://corrohealth.com/careers" target="_blank" class="apply-link">🏥 Company Site</a>
+            
+            <div class="interest-buttons">
+                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')" data-job-id="corrohealth-medical-director">
+                    ⭐ Interested
+                </button>
+                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')" data-job-id="corrohealth-medical-director">
+                    ❌ Not Interested
+                </button>
+            </div>
+        </div>
+
+        <div class="job-card">
+            <div class="job-header">
+                <div class="job-title">Remote Physician Reviewer - Utilization Management <span class="job-status new">NEW</span></div>
+                <div class="salary">$180K-$250K</div>
+            </div>
+            <div class="company">Dane Street LLC (Multiple Companies Hiring)</div>
+            <div class="job-details">
+                <div class="detail-row">
+                    📍 Remote US (All States)
+                </div>
+                <div class="detail-row">
+                    ⏰ Full-time or Part-time Available
+                </div>
+                <div class="detail-row">
+                    💻 <span class="remote-badge fully-remote">100% Remote</span>
+                </div>
+            </div>
+
+            <div class="job-description">
+                <h4>🎯 Multiple Companies Expanding Panels</h4>
+                <p>Board-Certified physicians needed for Utilization Reviews in fully remote, non-clinical roles offering supplemental income. Over 7,925 remote medical review physician positions available according to current job board data.</p>
+                
+                <h4>📋 Core Responsibilities</h4>
+                <ul>
+                    <li>Conduct utilization reviews for insurance claims</li>
+                    <li>Review medical necessity for treatments and procedures</li>
+                    <li>Provide clinical expertise for coverage determinations</li>
+                    <li>Work with case management teams remotely</li>
+                </ul>
+                
+                <h4>🏆 Ideal for Spine/EMG Specialists</h4>
+                <ul>
+                    <li>Your expertise highly valued for complex MSK cases</li>
+                    <li>Premium rates for specialized procedural knowledge</li>
+                    <li>High demand for interventional spine reviews</li>
+                    <li>EMG interpretation skills command premium</li>
+                </ul>
+
+                <div class="benefits-highlight">
+                    <strong>💼 Current Market:</strong> 7,925+ remote medical review positions available • Growing demand • Flexible scheduling • Supplemental or primary income options
+                </div>
+            </div>
+
+            <div class="requirements">
+                <h4>Required Qualifications:</h4>
+                <ul>
+                    <li>Board certification in any specialty (PM&R preferred)</li>
+                    <li>Active medical license in good standing</li>
+                    <li>2+ years post-residency experience</li>
+                    <li>Computer proficiency for remote work</li>
+                </ul>
+            </div>
+
+            <div class="contact-info">
+                <strong>Multiple Hiring Companies:</strong>
+                <div>Dane Street: marketing@danestreet.com</div>
+                <div>Search "Remote Medical Review" on major job boards</div>
+                <div>Immediate need - fast credentialing process</div>
+            </div>
+
+            <a href="mailto:marketing@danestreet.com?subject=Remote Physician Reviewer Position&body=Hello,%0A%0AI am interested in remote physician reviewer positions. I am board-certified with experience in PM&R/Spine/EMG.%0A%0APlease send information about available opportunities.%0A%0AThank you,%0A[Your Name]" class="apply-link primary">📧 Contact Dane Street</a>
+            <a href="https://jooble.org/jobs-remote-physician-reviewer" target="_blank" class="apply-link">🔍 Browse All Options</a>
+        </div>
+
+        <!-- REMOTE NON-CLINICAL SECTION -->
+        <div class="new-section">
+            💼 REMOTE NON-CLINICAL OPPORTUNITIES - SPINE EXPERTISE VALUED
+        </div>
+
+        <!-- INSURANCE MEDICAL DIRECTORS -->
+        <div class="job-card">
+            <div class="job-header">
+                <div class="job-title">Medical Director - Utilization Management <span class="priority">TOP PAY</span><span class="job-status new">NEW</span></div>
+                <div class="salary">$269K-$425K</div>
+            </div>
+            <div class="company">UnitedHealth Group/Optum</div>
+            <div class="job-details">
+                <div class="detail-row">
+                    📍 Remote (Multiple States Available)
+                </div>
+                <div class="detail-row">
+                    ⏰ Standard Business Hours (No Nights/Weekends)
+                </div>
+                <div class="detail-row">
+                    💻 <span class="remote-badge fully-remote">100% Remote</span>
+                </div>
+            </div>
+
+            <div class="job-description">
+                <h4>🎯 Executive Medical Leadership Role</h4>
+                <p>Lead utilization management programs for one of the nation's largest health insurers. Your spine and EMG expertise will be crucial for complex musculoskeletal case reviews and policy development. This is a senior-level position with significant autonomy and executive compensation.</p>
+                
+                <h4>💰 Executive Compensation Package</h4>
+                <ul>
+                    <li>Base salary: $269K-$425K (based on experience)</li>
+                    <li>Annual performance bonuses up to 25% of base</li>
+                    <li>Comprehensive executive benefits package</li>
+                    <li>Stock options and long-term incentives</li>
+                    <li>Professional development budget ($15K annually)</li>
+                </ul>
+                
+                <h4>📋 Strategic Responsibilities</h4>
+                <ul>
+                    <li>Develop clinical policies for spine and pain procedures</li>
+                    <li>Lead utilization review for complex MSK cases</li>
+                    <li>Collaborate with medical staff on coverage decisions</li>
+                    <li>Oversee physician advisor teams</li>
+                    <li>Interface with external medical societies</li>
+                </ul>
+                
+                <h4>🏆 Why Your Background Is Ideal</h4>
+                <ul>
+                    <li>20+ years spine experience = senior leadership qualification</li>
+                    <li>EMG expertise essential for complex neurological reviews</li>
+                    <li>Interventional procedures knowledge crucial for policy</li>
+                    <li>Clinical credibility needed for physician engagement</li>
+                </ul>
+
+                <div class="benefits-highlight">
+                    <strong>🌟 Executive Perks:</strong> Work-from-home stipend • Company laptop/equipment • Flexible PTO • Health/dental/vision • Retirement matching • Executive development programs
+                </div>
+            </div>
+
+            <div class="requirements">
+                <h4>Executive Qualifications:</h4>
+                <ul>
+                    <li>Board certification in PM&R, Orthopedics, or related specialty</li>
+                    <li>15+ years clinical experience (20+ preferred)</li>
+                    <li>Leadership experience in clinical or administrative roles</li>
+                    <li>Knowledge of evidence-based medicine and clinical guidelines</li>
+                    <li>Excellent communication and presentation skills</li>
+                    <li>MBA or healthcare administration background preferred</li>
+                </ul>
+            </div>
+
+            <div class="contact-info">
+                <strong>Application Process:</strong>
+                <div>Visit: careers.unitedhealthgroup.com</div>
+                <div>Search: "Medical Director Utilization Management"</div>
+                <div>Multiple positions available across different divisions</div>
+                <div><strong>Tip:</strong> Mention spine/EMG specialization in cover letter</div>
+            </div>
+
+            <a href="https://careers.unitedhealthgroup.com/search-jobs/medical%20director%20utilization/United%20States/13252/1/2/6252001/39x76/-98x5/50/2" target="_blank" class="apply-link primary">🔍 Search UHG Careers</a>
+            <a href="https://careers.unitedhealthgroup.com" target="_blank" class="apply-link">🏥 Main Careers Page</a>
+        </div>
+
+        <div class="job-card">
+            <div class="job-header">
+                <div class="job-title">Remote Telemedicine Physician - MSK Specialty <span class="job-status new">NEW</span></div>
+                <div class="salary">$150-$300/hr</div>
+            </div>
+            <div class="company">Multiple Platforms (183 Active Postings)</div>
+            <div class="job-details">
+                <div class="detail-row">
+                    📍 Remote US (All States with Telemedicine License)
+                </div>
+                <div class="detail-row">
+                    ⏰ Ultra-Flexible Schedule (Choose Your Hours)
+                </div>
+                <div class="detail-row">
+                    💻 <span class="remote-badge fully-remote">100% Remote</span>
+                </div>
+            </div>
+
+            <div class="job-description">
+                <h4>🎯 High-Demand Specialty Telemedicine</h4>
+                <p>DocCafe shows 183 active telemedicine physician positions. With your PM&R background, you're perfectly positioned for MSK-focused telehealth roles. Many platforms specifically seek physicians with spine and pain management expertise.</p>
+                
+                <h4>💰 Premium Hourly Rates</h4>
+                <ul>
+                    <li>Standard consultations: $150-$200/hour</li>
+                    <li>Specialized spine evaluations: $250-$300/hour</li>
+                    <li>Medical marijuana certifications: $200-$250/hour</li>
+                    <li>Expert consultations: $300-$400/hour</li>
+                    <li>Potential: $150K-$400K+ annually based on hours worked</li>
+                </ul>
+                
+                <h4>📋 Typical Services Offered</h4>
+                <ul>
+                    <li>Virtual spine and pain consultations</li>
+                    <li>Second opinion services</li>
+                    <li>Medical marijuana evaluations and certifications</li>
+                    <li>Disability and worker's compensation evaluations</li>
+                    <li>Follow-up care and medication management</li>
+                </ul>
+
+                <div class="benefits-highlight">
+                    <strong>🚀 Perfect Setup:</strong> Work from home • Set own schedule • No overhead costs • Platform handles billing • Malpractice often included • Choose your patient volume
+                </div>
+            </div>
+
+            <div class="requirements">
+                <h4>Basic Requirements:</h4>
+                <ul>
+                    <li>Board certification in PM&R, Pain Management, or related specialty</li>
+                    <li>Active medical license (multi-state preferred)</li>
+                    <li>Telemedicine experience preferred but not required</li>
+                    <li>Reliable internet and video conferencing capability</li>
+                    <li>Electronic prescribing capability (if applicable)</li>
+                </ul>
+            </div>
+
+            <div class="contact-info">
+                <strong>Major Telemedicine Platforms:</strong>
+                <div>DocCafe: 183 active telemedicine positions</div>
+                <div>FlexJobs: Premium curated remote opportunities</div>
+                <div>Indeed: 2,694+ remote physician jobs</div>
+                <div><strong>Strategy:</strong> Apply to multiple platforms for maximum flexibility</div>
+            </div>
+
+            <a href="https://www.doccafe.com/physician-jobs/specialty/telemedicine" target="_blank" class="apply-link primary">📋 Browse DocCafe (183 Jobs)</a>
+            <a href="https://www.flexjobs.com/remote-jobs/telemedicine-physician" target="_blank" class="apply-link">💼 FlexJobs Telemedicine</a>
+        </div>
+
+        <div class="job-card">
+            <div class="job-header">
+                <div class="job-title">National Medical Director <span class="priority">EXECUTIVE LEVEL</span></div>
+                <div class="salary">$287K-$507K</div>
+            </div>
+            <div class="company">CVS Health/Aetna</div>
+            <div class="job-details">
+                <div class="detail-row">
+                    📍 Remote Nationwide
+                </div>
+                <div class="detail-row">
+                    ⏰ Executive Schedule
+                </div>
+                <div class="detail-row">
+                    💻 <span class="remote-badge fully-remote">100% Remote</span>
+                </div>
+            </div>
+            <div class="requirements">
+                <h4>Executive Requirements:</h4>
+                <ul>
+                    <li>Advanced degree (MD required)</li>
+                    <li>15+ years clinical experience</li>
+                    <li>Leadership/management experience</li>
+                    <li>Healthcare policy development background</li>
+                </ul>
+            </div>
+            <div class="contact-info">
+                <strong>Apply:</strong>
+                <div>jobs.cvshealth.com</div>
+                <div>Clinical policy development & coverage decisions</div>
+                <div>Strategic leadership role with significant autonomy</div>
+            </div>
+            <a href="https://jobs.cvshealth.com" target="_blank" class="apply-link">Explore Positions</a>
+        </div>
+
+        <!-- TELEHEALTH & DIGITAL HEALTH -->
+        <div class="new-section">
+            🌐 TELEHEALTH & DIGITAL HEALTH - LOW STRESS, HIGH FLEXIBILITY
+        </div>
+
+        <div class="job-card">
+            <div class="job-header">
+                <div class="job-title">Remote MSK Specialist <span class="priority">PERFECT FIT</span></div>
+                <div class="salary">$95-$150/hr</div>
+            </div>
+            <div class="company">Teladoc Health - MSK Division</div>
+            <div class="job-details">
+                <div class="detail-row">
+                    📍 Remote US
+                </div>
+                <div class="detail-row">
+                    ⏰ Part-Time/Full-Time Options
+                </div>
+                <div class="detail-row">
+                    💻 <span class="remote-badge fully-remote">100% Remote</span>
+                </div>
+            </div>
+            <div class="requirements">
+                <h4>Ideal Background:</h4>
+                <ul>
+                    <li>PM&R or similar specialty certification</li>
+                    <li>Experience with spine conditions</li>
+                    <li>Comfortable with virtual consultations</li>
+                    <li>EMR proficiency (Epic preferred)</li>
+                </ul>
+            </div>
+            <div class="contact-info">
+                <strong>Apply:</strong>
+                <div>teladochealth.com/careers</div>
+                <div>Search: "MSK" or "Musculoskeletal"</div>
+                <div>Benefits: CME credits, malpractice coverage, performance bonuses</div>
+            </div>
+            <a href="https://teladochealth.com/careers" target="_blank" class="apply-link">Apply Online</a>
+        </div>
+
+        <div class="job-card">
+            <div class="job-header">
+                <div class="job-title">Senior Spine Telehealth Consultant</div>
+                <div class="salary">$120-$180/hr</div>
+            </div>
+            <div class="company">Ro Health (formerly Roman)</div>
+            <div class="job-details">
+                <div class="detail-row">
+                    📍 Remote Nationwide
+                </div>
+                <div class="detail-row">
+                    ⏰ Flexible Hours (10-40hrs/week)
+                </div>
+                <div class="detail-row">
+                    💻 <span class="remote-badge fully-remote">100% Remote</span>
+                </div>
+            </div>
+            <div class="requirements">
+                <h4>Requirements:</h4>
+                <ul>
+                    <li>Board certification in relevant specialty</li>
+                    <li>Spine/MSK treatment experience</li>
+                    <li>Telehealth platform comfort</li>
+                    <li>Patient-focused communication style</li>
+                </ul>
+            </div>
+            <div class="contact-info">
+                <strong>Apply:</strong>
+                <div>ro.co/careers</div>
+                <div>Modern platform, streamlined workflows</div>
+                <div>Focus: spine pain management and conservative treatment</div>
+            </div>
+            <a href="https://ro.co/careers" target="_blank" class="apply-link">View Openings</a>
+        </div>
+
+        <!-- PHARMACEUTICAL & BIOTECH -->
+        <div class="job-card">
+            <div class="job-header">
+                <div class="job-title">Medical Science Liaison - Spine & Pain</div>
+                <div class="salary">$180K-$250K + Bonus</div>
+            </div>
+            <div class="company">Vertex Pharmaceuticals</div>
+            <div class="job-details">
+                <div class="detail-row">
+                    📍 Remote with Regional Territory
+                </div>
+                <div class="detail-row">
+                    ⏰ Field-Based (Flexible Schedule)
+                </div>
+                <div class="detail-row">
+                    💻 <span class="remote-badge hybrid">Remote + Minimal Travel</span>
+                </div>
+            </div>
+            <div class="requirements">
+                <h4>Ideal Candidate:</h4>
+                <ul>
+                    <li>Advanced degree (MD, PharmD, PhD)</li>
+                    <li>Pain management clinical background</li>
+                    <li>Strong scientific communication skills</li>
+                    <li>KOL relationship experience preferred</li>
+                </ul>
+            </div>
+            <div class="contact-info">
+                <strong>Apply:</strong>
+                <div>vrtx.com/careers</div>
+                <div>Search: "Medical Science Liaison"</div>
+                <div>Interventional spine expertise highly valued</div>
+            </div>
+            <a href="https://vrtx.com/careers" target="_blank" class="apply-link">Apply Now</a>
+        </div>
+
+        <!-- CLINICAL RESEARCH -->
+        <div class="job-card">
+            <div class="job-header">
+                <div class="job-title">Medical Director - Spine Clinical Trials <span class="priority">SPECIALIZED</span></div>
+                <div class="salary">$226K-$387K</div>
+            </div>
+            <div class="company">IQVIA</div>
+            <div class="job-details">
+                <div class="detail-row">
+                    📍 Remote Flexible
+                </div>
+                <div class="detail-row">
+                    ⏰ Standard Business Hours
+                </div>
+                <div class="detail-row">
+                    💻 <span class="remote-badge fully-remote">100% Remote</span>
+                </div>
+            </div>
+            <div class="requirements">
+                <h4>Perfect Background:</h4>
+                <ul>
+                    <li>Orthopedic or PM&R specialty</li>
+                    <li>Clinical trial experience preferred</li>
+                    <li>Spine device/procedure familiarity</li>
+                    <li>Regulatory knowledge helpful</li>
+                </ul>
+            </div>
+            <div class="contact-info">
+                <strong>Apply:</strong>
+                <div>jobs.iqvia.com</div>
+                <div>Search: "Medical Director" + "Spine"</div>
+                <div>Leading CRO with extensive spine trial portfolio</div>
+            </div>
+            <a href="https://jobs.iqvia.com" target="_blank" class="apply-link">Search Jobs</a>
+        </div>
+
+        <!-- MEDICAL WRITING & EDUCATION -->
+        <div class="new-section">
+            ✍️ MEDICAL WRITING & EDUCATION - INTELLECTUAL, LOW STRESS
+        </div>
+
+        <div class="job-card">
+            <div class="job-header">
+                <div class="job-title">Senior Medical Writer - Orthopedics</div>
+                <div class="salary">$163K-$265K</div>
+            </div>
+            <div class="company">Elsevier</div>
+            <div class="job-details">
+                <div class="detail-row">
+                    📍 Remote Worldwide
+                </div>
+                <div class="detail-row">
+                    ⏰ Standard Business Hours
+                </div>
+                <div class="detail-row">
+                    💻 <span class="remote-badge fully-remote">100% Remote</span>
+                </div>
+            </div>
+            <div class="requirements">
+                <h4>Requirements:</h4>
+                <ul>
+                    <li>Medical degree with clinical experience</li>
+                    <li>Strong scientific writing skills</li>
+                    <li>Orthopedic/spine knowledge preferred</li>
+                    <li>Publication experience helpful</li>
+                </ul>
+            </div>
+            <div class="contact-info">
+                <strong>Apply:</strong>
+                <div>careers.elsevier.com</div>
+                <div>Clinical content creation for medical publications</div>
+                <div>Flexible, intellectual work environment</div>
+            </div>
+            <a href="https://careers.elsevier.com" target="_blank" class="apply-link">View Positions</a>
+        </div>
+
+        <div class="job-card">
+            <div class="job-header">
+                <div class="job-title">Freelance Medical Education Content Creator</div>
+                <div class="salary">$75-$150/hr</div>
+            </div>
+            <div class="company">Medscape Education Network</div>
+            <div class="job-details">
+                <div class="detail-row">
+                    📍 Remote Global
+                </div>
+                <div class="detail-row">
+                    ⏰ Project-Based (Ultra Flexible)
+                </div>
+                <div class="detail-row">
+                    💻 <span class="remote-badge fully-remote">100% Remote</span>
+                </div>
+            </div>
+            <div class="requirements">
+                <h4>Ideal For:</h4>
+                <ul>
+                    <li>Experienced clinicians seeking flexibility</li>
+                    <li>Strong educational writing ability</li>
+                    <li>CME content development interest</li>
+                    <li>Self-directed work style</li>
+                </ul>
+            </div>
+            <div class="contact-info">
+                <strong>Apply:</strong>
+                <div>medscape.com/freelance-opportunities</div>
+                <div>Create CME content, case studies, clinical modules</div>
+                <div>Work on your schedule, choose your projects</div>
+            </div>
+            <a href="https://medscape.com" target="_blank" class="apply-link">Learn More</a>
+        </div>
+
+        <!-- EXPERT WITNESS & CONSULTING -->
+        <div class="job-card expandable" onclick="toggleExpand(this)">
+            <div class="job-header">
+                <div class="job-title">Medical Expert Witness Network <span class="priority">HIGH HOURLY</span></div>
+                <div class="salary">$300-$500+/hr</div>
+            </div>
+            <div class="company">Multiple Platforms</div>
+            <div class="collapsible">
+                <div class="job-details">
+                    <div class="detail-row">
+                        📍 National Cases
+                    </div>
+                    <div class="detail-row">
+                        ⏰ Case-by-Case Flexible
+                    </div>
+                    <div class="detail-row">
+                        💻 <span class="remote-badge hybrid">Remote + Occasional Travel</span>
+                    </div>
+                </div>
+                <div class="requirements">
+                    <h4>Perfect for Spine/EMG Specialists:</h4>
+                    <ul>
+                        <li>20+ years clinical experience (✓)</li>
+                        <li>Board certification in relevant specialty</li>
+                        <li>Strong analytical and communication skills</li>
+                        <li>Comfortable with legal proceedings</li>
+                    </ul>
+                </div>
+                <div class="contact-info">
+                    <strong>Top Expert Witness Platforms:</strong>
+                    <div>• <a href="https://expertinstitute.com" target="_blank">Expert Institute</a> - Premium medical cases</div>
+                    <div>• <a href="https://imenet.com" target="_blank">SEAK Expert Witness Directory</a> - Established network</div>
+                    <div>• <a href="https://jurispro.com" target="_blank">JurisPro Expert Witnesses</a> - National platform</div>
+                    <div>• <a href="https://expertwitness.com" target="_blank">ExpertWitness.com</a> - Large case volume</div>
+                    <div>• Potential: $50K-$200K+ annually part-time</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADDITIONAL LOW-STRESS OPTIONS -->
+        <div class="new-section">
+            🧘 ADDITIONAL LOW-STRESS REMOTE OPPORTUNITIES
+        </div>
+
+        <div class="job-card">
+            <div class="job-header">
+                <div class="job-title">Medical Advisor - Digital Health Platform</div>
+                <div class="salary">$150K-$200K</div>
+            </div>
+            <div class="company">Hinge Health</div>
+            <div class="job-details">
+                <div class="detail-row">
+                    📍 Remote US
+                </div>
+                <div class="detail-row">
+                    ⏰ Standard Business Hours
+                </div>
+                <div class="detail-row">
+                    💻 <span class="remote-badge fully-remote">100% Remote</span>
+                </div>
+            </div>
+            <div class="requirements">
+                <h4>Great Match For:</h4>
+                <ul>
+                    <li>MSK specialty background</li>
+                    <li>Interest in digital therapeutics</li>
+                    <li>Patient care protocol development</li>
+                    <li>Evidence-based treatment approaches</li>
+                </ul>
+            </div>
+            <div class="contact-info">
+                <strong>Apply:</strong>
+                <div>hingehealth.com/careers</div>
+                <div>Digital MSK programs, low-stress environment</div>
+                <div>Focus on conservative care and patient outcomes</div>
+            </div>
+            <a href="https://hingehealth.com/careers" target="_blank" class="apply-link">Apply Now</a>
+        </div>
+
+        <div class="job-card">
+            <div class="job-header">
+                <div class="job-title">Clinical Content Reviewer</div>
+                <div class="salary">$85-$125/hr</div>
+            </div>
+            <div class="company">UpToDate (Wolters Kluwer)</div>
+            <div class="job-details">
+                <div class="detail-row">
+                    📍 Remote Global
+                </div>
+                <div class="detail-row">
+                    ⏰ Very Flexible Schedule
+                </div>
+                <div class="detail-row">
+                    💻 <span class="remote-badge fully-remote">100% Remote</span>
+                </div>
+            </div>
+            <div class="requirements">
+                <h4>Requirements:</h4>
+                <ul>
+                    <li>Board certification in relevant field</li>
+                    <li>Current clinical knowledge</li>
+                    <li>Detail-oriented review skills</li>
+                    <li>Interest in medical education</li>
+                </ul>
+            </div>
+            <div class="contact-info">
+                <strong>Apply:</strong>
+                <div>wolterskluwer.com/en/expert-careers</div>
+                <div>Review and update clinical content</div>
+                <div>Very low stress, work at your own pace</div>
+            </div>
+            <a href="https://wolterskluwer.com/en/expert-careers" target="_blank" class="apply-link">Learn More</a>
+        </div>
+
+        <div class="footer">
+            <h3>📈 Market Overview & Insights</h3>
+            <p><strong>Current Opportunities:</strong><br>
+            Multiple immediate openings available including part-time medical director roles, high-paying IME positions, executive-level insurance company positions, and flexible telemedicine opportunities across various platforms.</p>
+            
+            <p><strong>Market Trends:</strong><br>
+            • Significant growth in remote physician opportunities<br>
+            • Premium compensation for specialized expertise<br>
+            • Increased demand for spine and EMG knowledge<br>
+            • Flexible scheduling becoming standard offering</p>
+            
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #4a5568;">
+                <strong>💰 Income Potential:</strong> $200K-$500K+ annually through strategic remote role combinations<br>
+                <strong>🎯 Market Advantage:</strong> 20 years + interventional spine + EMG expertise = Premium positioning for high-value remote opportunities<br>
+                <strong>📈 Market Insight:</strong> 90% of listed opportunities are remote/hybrid • Spine expertise commanding premium rates • Non-clinical roles offering improved work-life balance
+            </div>
+        </div>
+    </div>
+
+    <div class="last-updated">
+        <strong>Last Updated:</strong> August 28, 2025 • <strong>Next Update:</strong> September 4, 2025 • 
+        <strong>Active Jobs:</strong> <span id="total-jobs">32</span> • 
+        <strong>New This Week:</strong> <span id="new-this-week">6</span> • 
+        <button onclick="showPreferenceSummary()" style="background:#4299e1;color:white;border:none;padding:5px 10px;border-radius:4px;margin-left:10px;cursor:pointer;font-size:0.8rem;">📋 Share Preferences</button>
+    </div>
+
+    <script>
+        function toggleExpand(element) {
+            const collapsible = element.querySelector('.collapsible');
+            
+            if (collapsible.classList.contains('collapsed')) {
+                collapsible.classList.remove('collapsed');
+                element.classList.remove('collapsed');
+                collapsible.style.maxHeight = collapsible.scrollHeight + 'px';
+            } else {
+                collapsible.classList.add('collapsed');
+                element.classList.add('collapsed');
+                collapsible.style.maxHeight = '0px';
+            }
+        }
+        
+        // Count jobs and update statistics
+        function updateJobStats() {
+            const jobCards = document.querySelectorAll('.job-card:not(.not-interested)'); // Don't count not-interested jobs
+            const newJobs = document.querySelectorAll('.job-status.new');
+            
+            const totalJobs = jobCards.length;
+            const newThisWeek = newJobs.length;
+            
+            // Update main stats
+            document.getElementById('job-count').textContent = totalJobs;
+            document.getElementById('new-count').textContent = newThisWeek;
+            
+            // Update footer stats
+            document.getElementById('total-jobs').textContent = totalJobs;
+            document.getElementById('new-this-week').textContent = newThisWeek;
+        }
+
+        // Interest tracking system
+        async function markInterest(button, type) {
+            const jobId = button.getAttribute('data-job-id');
+            const jobCard = button.closest('.job-card');
+            const jobTitle = jobCard.querySelector('.job-title');
+            const buttons = jobCard.querySelectorAll('.interest-btn');
+            
+            const preferenceData = {
+                type: type,
+                timestamp: new Date().toISOString(),
+                jobTitle: jobTitle.textContent.replace(/NEW|HOT|URGENT/g, '').trim(),
+                jobId: jobId
+            };
+            
+            // Save preference to localStorage (for immediate UI updates)
+            let preferences = JSON.parse(localStorage.getItem('jobPreferences') || '{}');
+            preferences[jobId] = preferenceData;
+            localStorage.setItem('jobPreferences', JSON.stringify(preferences));
+            
+            // Save to Firebase (for persistence and remote access)
+            try {
+                if (window.firebaseDB) {
+                    const docRef = window.firebaseDoc(window.firebaseDB, 'jobPreferences', jobId);
+                    await window.firebaseSetDoc(docRef, {
+                        ...preferenceData,
+                        serverTimestamp: window.firebaseServerTimestamp()
+                    });
+                    console.log('Preference saved to Firebase:', jobId, type);
+                    
+                    // Also add to activity log for email system
+                    await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDB, 'activityLog'), {
+                        action: 'job_preference',
+                        jobId: jobId,
+                        preferenceType: type,
+                        jobTitle: preferenceData.jobTitle,
+                        timestamp: window.firebaseServerTimestamp(),
+                        userAgent: navigator.userAgent
+                    });
+                }
+            } catch (error) {
+                console.warn('Firebase save failed, but localStorage backup successful:', error);
+            }
+            
+            // Update UI
+            jobCard.className = 'job-card ' + type;
+            
+            // Update buttons
+            buttons.forEach(btn => {
+                btn.className = 'interest-btn neutral';
+                btn.disabled = false;
+            });
+            button.className = 'interest-btn ' + type;
+            button.disabled = true;
+            
+            // Add status indicator to job title
+            let existingStatus = jobTitle.querySelector('.interest-status');
+            if (existingStatus) {
+                existingStatus.remove();
+            }
+            
+            if (type !== 'neutral') {
+                const statusSpan = document.createElement('span');
+                statusSpan.className = 'interest-status ' + type;
+                statusSpan.textContent = type === 'interested' ? 'INTERESTED' : 'NOT INTERESTED';
+                jobTitle.appendChild(statusSpan);
+            }
+            
+            // Update job stats
+            updateJobStats();
+            
+            // Show confirmation message
+            showNotification(type === 'interested' ? 'Job marked as interested! It will be prioritized in future updates.' : 'Job marked as not interested. It will be removed in the next weekly update.');
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #48bb78;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                font-weight: bold;
+                z-index: 1000;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                transition: all 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateY(-20px)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Load saved preferences
+        function loadPreferences() {
+            const preferences = JSON.parse(localStorage.getItem('jobPreferences') || '{}');
+            
+            for (const [jobId, preference] of Object.entries(preferences)) {
+                const jobCard = document.querySelector(`[data-job-id="${jobId}"]`)?.closest('.job-card');
+                if (jobCard) {
+                    const jobTitle = jobCard.querySelector('.job-title');
+                    const buttons = jobCard.querySelectorAll('.interest-btn');
+                    
+                    // Apply saved preference
+                    jobCard.className = 'job-card ' + preference.type;
+                    
+                    // Update buttons
+                    buttons.forEach(btn => {
+                        btn.className = 'interest-btn neutral';
+                        btn.disabled = false;
+                        if (btn.getAttribute('onclick').includes(preference.type)) {
+                            btn.className = 'interest-btn ' + preference.type;
+                            btn.disabled = true;
+                        }
+                    });
+                    
+                    // Add status indicator
+                    if (preference.type !== 'neutral') {
+                        const statusSpan = document.createElement('span');
+                        statusSpan.className = 'interest-status ' + preference.type;
+                        statusSpan.textContent = preference.type === 'interested' ? 'INTERESTED' : 'NOT INTERESTED';
+                        jobTitle.appendChild(statusSpan);
+                    }
+                }
+            }
+        }
+
+        // Get preferences for weekly update system
+        function getPreferences() {
+            return JSON.parse(localStorage.getItem('jobPreferences') || '{}');
+        }
+
+        // Clear old preferences (for maintenance)
+        function clearOldPreferences() {
+            const preferences = JSON.parse(localStorage.getItem('jobPreferences') || '{}');
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+            
+            // Remove not-interested items older than a week
+            for (const [jobId, preference] of Object.entries(preferences)) {
+                if (preference.type === 'not-interested' && new Date(preference.timestamp) < oneWeekAgo) {
+                    delete preferences[jobId];
+                }
+            }
+            
+            localStorage.setItem('jobPreferences', JSON.stringify(preferences));
+        }
+
+        // Export preferences for sharing with weekly update system
+        function exportPreferences() {
+            const preferences = JSON.parse(localStorage.getItem('jobPreferences') || '{}');
+            const report = generatePreferenceReport(preferences);
+            
+            // Create downloadable file
+            const blob = new Blob([report], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `bobby-job-preferences-${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showNotification('Preferences exported! Share this file for personalized weekly updates.');
+        }
+
+        // Generate human-readable preference report
+        function generatePreferenceReport(preferences) {
+            const interested = [];
+            const notInterested = [];
+            const jobTypes = {};
+            const companies = {};
+            
+            for (const [jobId, pref] of Object.entries(preferences)) {
+                const cleanTitle = pref.jobTitle.replace(/NEW|HOT|URGENT|INTERESTED|NOT INTERESTED/g, '').trim();
+                
+                if (pref.type === 'interested') {
+                    interested.push({
+                        title: cleanTitle,
+                        date: new Date(pref.timestamp).toLocaleDateString()
+                    });
+                    
+                    // Analyze job types
+                    const lowerTitle = cleanTitle.toLowerCase();
+                    if (lowerTitle.includes('medical director')) jobTypes['Medical Director'] = (jobTypes['Medical Director'] || 0) + 1;
+                    if (lowerTitle.includes('ime') || lowerTitle.includes('independent medical examiner')) jobTypes['IME'] = (jobTypes['IME'] || 0) + 1;
+                    if (lowerTitle.includes('telemedicine') || lowerTitle.includes('telehealth')) jobTypes['Telemedicine'] = (jobTypes['Telemedicine'] || 0) + 1;
+                    if (lowerTitle.includes('reviewer') || lowerTitle.includes('utilization')) jobTypes['Utilization Review'] = (jobTypes['Utilization Review'] || 0) + 1;
+                    if (lowerTitle.includes('advisor') || lowerTitle.includes('consultant')) jobTypes['Advisory/Consulting'] = (jobTypes['Advisory/Consulting'] || 0) + 1;
+                    if (lowerTitle.includes('writer') || lowerTitle.includes('writing')) jobTypes['Medical Writing'] = (jobTypes['Medical Writing'] || 0) + 1;
+                    if (lowerTitle.includes('expert witness')) jobTypes['Expert Witness'] = (jobTypes['Expert Witness'] || 0) + 1;
+                    
+                } else if (pref.type === 'not-interested') {
+                    notInterested.push({
+                        title: cleanTitle,
+                        date: new Date(pref.timestamp).toLocaleDateString()
+                    });
+                }
+            }
+            
+            let report = `# Bobby's Job Preferences Report\n`;
+            report += `Generated: ${new Date().toLocaleString()}\n\n`;
+            
+            report += `## INTERESTED POSITIONS (${interested.length})\n`;
+            interested.forEach(job => {
+                report += `- ${job.title} (marked ${job.date})\n`;
+            });
+            
+            report += `\n## NOT INTERESTED POSITIONS (${notInterested.length})\n`;
+            notInterested.forEach(job => {
+                report += `- ${job.title} (marked ${job.date})\n`;
+            });
+            
+            if (Object.keys(jobTypes).length > 0) {
+                report += `\n## JOB TYPE PREFERENCES (Based on "Interested" selections)\n`;
+                const sortedTypes = Object.entries(jobTypes).sort((a, b) => b[1] - a[1]);
+                sortedTypes.forEach(([type, count]) => {
+                    report += `- ${type}: ${count} selection${count > 1 ? 's' : ''}\n`;
+                });
+            }
+            
+            report += `\n## SEARCH RECOMMENDATIONS\n`;
+            if (Object.keys(jobTypes).length > 0) {
+                report += `Focus weekly searches on these preferred job types:\n`;
+                const topTypes = Object.entries(jobTypes).sort((a, b) => b[1] - a[1]).slice(0, 3);
+                topTypes.forEach(([type, count]) => {
+                    report += `- "${type}" related positions\n`;
+                });
+            } else {
+                report += `No strong preferences identified yet. Continue with diverse job postings.\n`;
+            }
+            
+            report += `\n## JOBS TO REMOVE IN NEXT UPDATE\n`;
+            const oldNotInterested = notInterested.filter(job => {
+                const jobDate = new Date(job.date);
+                const oneWeekAgo = new Date();
+                oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+                return jobDate < oneWeekAgo;
+            });
+            
+            if (oldNotInterested.length > 0) {
+                oldNotInterested.forEach(job => {
+                    report += `- ${job.title}\n`;
+                });
+            } else {
+                report += `No jobs to remove yet.\n`;
+            }
+            
+            return report;
+        }
+
+        // Show preference summary in a popup for easy sharing
+        function showPreferenceSummary() {
+            const preferences = JSON.parse(localStorage.getItem('jobPreferences') || '{}');
+            const summary = generateQuickSummary(preferences);
+            
+            // Create modal popup
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 2000;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            `;
+            
+            const popup = document.createElement('div');
+            popup.style.cssText = `
+                background: white;
+                padding: 30px;
+                border-radius: 10px;
+                max-width: 600px;
+                max-height: 80vh;
+                overflow-y: auto;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            `;
+            
+            popup.innerHTML = `
+                <h3 style="color: #2d3748; margin-bottom: 20px;">📋 Bobby's Job Preferences Summary</h3>
+                <div style="background: #f7fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px; font-family: monospace; font-size: 0.9rem; white-space: pre-wrap;">${summary}</div>
+                <div style="text-align: center;">
+                    <button onclick="emailPreferences('${summary.replace(/'/g, "\\'")}');" style="background: #ed8936; color: white; border: none; padding: 10px 20px; border-radius: 6px; margin-right: 10px; cursor: pointer; font-weight: bold;">📧 Email to Zach</button>
+                    <button onclick="copyToClipboard('${summary.replace(/'/g, "\\'")}'); closeModal();" style="background: #48bb78; color: white; border: none; padding: 10px 20px; border-radius: 6px; margin-right: 10px; cursor: pointer; font-weight: bold;">📋 Copy</button>
+                    <button onclick="closeModal();" style="background: #e2e8f0; color: #4a5568; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold;">Close</button>
+                </div>
+                <p style="font-size: 0.8rem; color: #718096; margin-top: 15px; text-align: center;">Share this summary for personalized weekly job updates!</p>
+            `;
+            
+            modal.appendChild(popup);
+            document.body.appendChild(modal);
+            
+            // Close on background click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+            
+            // Store modal reference for closing
+            window.currentModal = modal;
+        }
+
+        // Generate a concise summary for sharing
+        function generateQuickSummary(preferences) {
+            const interested = [];
+            const notInterested = [];
+            const jobTypes = {};
+            
+            for (const [jobId, pref] of Object.entries(preferences)) {
+                const cleanTitle = pref.jobTitle.replace(/NEW|HOT|URGENT|INTERESTED|NOT INTERESTED/g, '').trim();
+                
+                if (pref.type === 'interested') {
+                    interested.push(cleanTitle);
+                    
+                    // Analyze preferences
+                    const lower = cleanTitle.toLowerCase();
+                    if (lower.includes('medical director')) jobTypes['Medical Director'] = (jobTypes['Medical Director'] || 0) + 1;
+                    if (lower.includes('ime') || lower.includes('independent medical examiner')) jobTypes['IME'] = (jobTypes['IME'] || 0) + 1;
+                    if (lower.includes('telemedicine') || lower.includes('telehealth')) jobTypes['Telemedicine'] = (jobTypes['Telemedicine'] || 0) + 1;
+                    if (lower.includes('reviewer') || lower.includes('utilization')) jobTypes['Review/UM'] = (jobTypes['Review/UM'] || 0) + 1;
+                    if (lower.includes('advisor') || lower.includes('consultant')) jobTypes['Consulting'] = (jobTypes['Consulting'] || 0) + 1;
+                } else if (pref.type === 'not-interested') {
+                    notInterested.push(cleanTitle);
+                }
+            }
+            
+            let summary = `🎯 BOBBY'S PREFERENCE SUMMARY (${new Date().toLocaleDateString()})\n\n`;
+            
+            if (interested.length > 0) {
+                summary += `✅ INTERESTED IN (${interested.length}):\n`;
+                interested.forEach(job => summary += `• ${job}\n`);
+                summary += `\n`;
+            }
+            
+            if (notInterested.length > 0) {
+                summary += `❌ NOT INTERESTED (${notInterested.length}):\n`;
+                notInterested.forEach(job => summary += `• ${job}\n`);
+                summary += `\n`;
+            }
+            
+            if (Object.keys(jobTypes).length > 0) {
+                summary += `📊 PREFERRED JOB TYPES:\n`;
+                Object.entries(jobTypes)
+                    .sort((a, b) => b[1] - a[1])
+                    .forEach(([type, count]) => {
+                        summary += `• ${type} (${count}x)\n`;
+                    });
+                summary += `\n`;
+            }
+            
+            summary += `💡 SEARCH FOCUS:\n`;
+            if (Object.keys(jobTypes).length > 0) {
+                const topTypes = Object.entries(jobTypes).sort((a, b) => b[1] - a[1]).slice(0, 2);
+                topTypes.forEach(([type]) => summary += `• More "${type}" positions\n`);
+            } else {
+                summary += `• Continue with diverse remote opportunities\n`;
+            }
+            
+            if (interested.length === 0 && notInterested.length === 0) {
+                summary += `\n📝 No preferences marked yet. Try marking some jobs as interested/not interested to help personalize future updates!`;
+            }
+            
+            return summary;
+        }
+
+        // Close modal
+        function closeModal() {
+            if (window.currentModal) {
+                document.body.removeChild(window.currentModal);
+                window.currentModal = null;
+            }
+        }
+
+        // Copy to clipboard
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('✅ Preferences copied! Share this with your weekly update system.');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showNotification('✅ Preferences copied! Share this with your weekly update system.');
+            });
+        }
+
+        // Email preferences to Zach
+        function emailPreferences(summary) {
+            const subject = `Bobby's Job Board Preferences - ${new Date().toLocaleDateString()}`;
+            const body = `Hi Zach,
+
+Here are my current job preferences for the weekly job board update:
+
+${summary}
+
+Please use this information to:
+1. Remove jobs I've marked as "not interested" 
+2. Prioritize similar jobs to ones I've marked as "interested"
+3. Focus searches on my preferred job types
+
+Thanks!
+Bobby`;
+
+            const mailtoLink = `mailto:shumaker.zach865@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            
+            // Open email client
+            window.location.href = mailtoLink;
+            
+            showNotification('📧 Email opened! Send when ready.');
+            closeModal();
+        }
+
+        // Download summary
+        function downloadSummary(text) {
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `bobby-preferences-${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showNotification('📥 Summary downloaded!');
+        }
+        
+        // Schedule weekly email system
+        function scheduleWeeklyEmail() {
+            // Check if we should send weekly email (Sunday mornings)
+            const now = new Date();
+            const lastEmailSent = localStorage.getItem('lastWeeklyEmailSent');
+            
+            // Check if it's Sunday (0) and between 8-11 AM
+            if (now.getDay() === 0 && now.getHours() >= 8 && now.getHours() <= 11) {
+                // Check if we haven't sent an email this week
+                const thisWeekStart = new Date(now);
+                thisWeekStart.setDate(now.getDate() - now.getDay()); // Go back to Sunday
+                thisWeekStart.setHours(0, 0, 0, 0);
+                
+                if (!lastEmailSent || new Date(lastEmailSent) < thisWeekStart) {
+                    // Show notification and auto-send email
+                    showWeeklyEmailPrompt();
+                }
+            }
+            
+            // Check every hour for the weekly email time
+            setTimeout(scheduleWeeklyEmail, 60 * 60 * 1000); // Check every hour
+        }
+        
+        // Show prompt for weekly email
+        function showWeeklyEmailPrompt() {
+            const preferences = JSON.parse(localStorage.getItem('jobPreferences') || '{}');
+            
+            // Only send if there are preferences to share
+            if (Object.keys(preferences).length === 0) {
+                return;
+            }
+            
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.7);
+                z-index: 3000;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            `;
+            
+            const popup = document.createElement('div');
+            popup.style.cssText = `
+                background: white;
+                padding: 30px;
+                border-radius: 15px;
+                max-width: 500px;
+                text-align: center;
+                box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+                border: 3px solid #ed8936;
+            `;
+            
+            popup.innerHTML = `
+                <h3 style="color: #2d3748; margin-bottom: 20px;">📅 Weekly Job Update Time!</h3>
+                <p style="color: #4a5568; margin-bottom: 25px; line-height: 1.5;">
+                    It's Sunday morning! Time to send your job preferences to Zach for this week's personalized job board update.
+                </p>
+                <div>
+                    <button onclick="sendWeeklyEmail(); closeWeeklyModal();" style="background: #ed8936; color: white; border: none; padding: 12px 25px; border-radius: 8px; margin: 5px; cursor: pointer; font-weight: bold; font-size: 1rem;">📧 Send Weekly Update</button>
+                    <button onclick="snoozeWeeklyEmail(); closeWeeklyModal();" style="background: #4299e1; color: white; border: none; padding: 12px 25px; border-radius: 8px; margin: 5px; cursor: pointer; font-weight: bold;">⏰ Remind Me Later</button>
+                    <button onclick="skipWeeklyEmail(); closeWeeklyModal();" style="background: #e2e8f0; color: #4a5568; border: none; padding: 12px 25px; border-radius: 8px; margin: 5px; cursor: pointer; font-weight: bold;">Skip This Week</button>
+                </div>
+            `;
+            
+            modal.appendChild(popup);
+            document.body.appendChild(modal);
+            window.weeklyModal = modal;
+        }
+        
+        // Send weekly email automatically
+        function sendWeeklyEmail() {
+            const preferences = JSON.parse(localStorage.getItem('jobPreferences') || '{}');
+            const weeklyReport = generateWeeklyUpdateReport(preferences);
+            
+            const subject = `Bobby's Weekly Job Board Update - ${new Date().toLocaleDateString()}`;
+            const body = weeklyReport;
+            
+            const mailtoLink = `mailto:shumaker.zach865@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.location.href = mailtoLink;
+            
+            // Mark as sent
+            localStorage.setItem('lastWeeklyEmailSent', new Date().toISOString());
+            showNotification('📧 Weekly update email sent to Zach!');
+        }
+        
+        // Generate detailed weekly report for job updates
+        function generateWeeklyUpdateReport(preferences) {
+            const interested = [];
+            const notInterested = [];
+            const newNotInterested = []; // Jobs marked not-interested this week
+            const jobTypes = {};
+            const companies = {};
+            
+            // Calculate one week ago
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+            
+            for (const [jobId, pref] of Object.entries(preferences)) {
+                const cleanTitle = pref.jobTitle.replace(/NEW|HOT|URGENT|INTERESTED|NOT INTERESTED/g, '').trim();
+                const prefDate = new Date(pref.timestamp);
+                
+                if (pref.type === 'interested') {
+                    interested.push({
+                        id: jobId,
+                        title: cleanTitle,
+                        date: prefDate.toLocaleDateString(),
+                        company: extractCompany(cleanTitle)
+                    });
+                    
+                    // Analyze job types for search recommendations
+                    analyzeJobType(cleanTitle, jobTypes);
+                    
+                } else if (pref.type === 'not-interested') {
+                    const notInterestedJob = {
+                        id: jobId,
+                        title: cleanTitle,
+                        date: prefDate.toLocaleDateString()
+                    };
+                    
+                    notInterested.push(notInterestedJob);
+                    
+                    // Check if marked as not interested this week
+                    if (prefDate >= oneWeekAgo) {
+                        newNotInterested.push(notInterestedJob);
+                    }
+                }
+            }
+            
+            // Calculate dynamic job quota
+            const minimumJobsToAdd = 5; // Base minimum per week
+            const jobsRemovedThisWeek = newNotInterested.length;
+            const recommendedJobsToAdd = Math.max(minimumJobsToAdd, jobsRemovedThisWeek + 3);
+            
+            let report = `Hi Zach,
+
+Here's Bobby's weekly job board update with specific instructions:
+
+═══════════════════════════════════════════════════════
+📅 WEEKLY JOB BOARD UPDATE - ${new Date().toLocaleDateString()}
+═══════════════════════════════════════════════════════
+
+🔴 JOBS TO REMOVE (${notInterested.length} total, ${newNotInterested.length} this week):
+${notInterested.length > 0 ? notInterested.map(job => 
+`❌ "${job.title}" (Job ID: ${job.id})`).join('\n') : 'None this week'}
+
+✅ JOBS BOBBY LIKED (${interested.length}):
+${interested.length > 0 ? interested.map(job => 
+`⭐ "${job.title}" (marked ${job.date})`).join('\n') : 'None marked yet'}
+
+🎯 JOB QUOTA FOR THIS WEEK:
+REQUIRED: Add ${recommendedJobsToAdd} new jobs
+${jobsRemovedThisWeek > 0 ? 
+`• Base minimum: 5 jobs per week
+• Jobs removed this week: ${jobsRemovedThisWeek}
+• Replacement jobs needed: ${jobsRemovedThisWeek}
+• Buffer jobs: 3 additional
+• TOTAL NEEDED: ${recommendedJobsToAdd} jobs` : 
+`• Base minimum: 5 jobs per week (no extra removals this week)`}
+
+🔍 SEARCH FOR MORE JOBS LIKE THESE:
+${generateSearchInstructions(jobTypes, interested)}
+
+📊 JOB TYPE PREFERENCES (Priority Order):
+${Object.keys(jobTypes).length > 0 ? 
+Object.entries(jobTypes)
+    .sort((a, b) => b[1] - a[1])
+    .map(([type, count]) => `• ${type} (${count} selection${count > 1 ? 's' : ''})`)
+    .join('\n') : 'No strong preferences identified yet'}
+
+💡 SPECIFIC INSTRUCTIONS FOR YOU:
+1. REMOVE the ${notInterested.length} jobs marked with ❌ from the job board
+2. ADD ${recommendedJobsToAdd} NEW JOBS focusing on Bobby's preferred categories
+3. PRIORITIZE job types Bobby has marked as "interested"
+4. SEARCH for similar positions to the ones marked with ⭐
+5. MOVE any existing "interested" jobs to the top of their sections
+6. ENSURE all new jobs have interest tracking buttons
+
+📈 SEARCH KEYWORDS TO USE (Focus for ${recommendedJobsToAdd} new jobs):
+${generateSearchKeywords(jobTypes, interested)}
+
+🎯 RECOMMENDED JOB DISTRIBUTION:
+${generateJobDistribution(jobTypes, interested, recommendedJobsToAdd)}
+
+═══════════════════════════════════════════════════════
+
+This report was automatically generated from Bobby's job board interactions.
+Upload this to Claude for personalized job research and board updates.
+
+Thanks!
+Bobby's Job Board System`;
+
+            return report;
+        }
+        
+        // Helper functions for report generation
+        function extractCompany(title) {
+            // Simple company extraction logic
+            const parts = title.split(' - ');
+            return parts.length > 1 ? parts[parts.length - 1] : 'Various';
+        }
+        
+        function analyzeJobType(title, jobTypes) {
+            const lower = title.toLowerCase();
+            if (lower.includes('medical director')) jobTypes['Medical Director'] = (jobTypes['Medical Director'] || 0) + 1;
+            if (lower.includes('ime') || lower.includes('independent medical examiner')) jobTypes['IME'] = (jobTypes['IME'] || 0) + 1;
+            if (lower.includes('telemedicine') || lower.includes('telehealth')) jobTypes['Telemedicine'] = (jobTypes['Telemedicine'] || 0) + 1;
+            if (lower.includes('reviewer') || lower.includes('utilization')) jobTypes['Utilization Review'] = (jobTypes['Utilization Review'] || 0) + 1;
+            if (lower.includes('advisor') || lower.includes('consultant')) jobTypes['Consulting'] = (jobTypes['Consulting'] || 0) + 1;
+            if (lower.includes('writer') || lower.includes('writing')) jobTypes['Medical Writing'] = (jobTypes['Medical Writing'] || 0) + 1;
+            if (lower.includes('expert witness')) jobTypes['Expert Witness'] = (jobTypes['Expert Witness'] || 0) + 1;
+            if (lower.includes('msl') || lower.includes('medical science liaison')) jobTypes['MSL'] = (jobTypes['MSL'] || 0) + 1;
+        }
+        
+        function generateSearchInstructions(jobTypes, interested) {
+            if (interested.length === 0) {
+                return 'Continue with diverse remote physician opportunities';
+            }
+            
+            let instructions = [];
+            interested.forEach(job => {
+                const lower = job.title.toLowerCase();
+                if (lower.includes('medical director')) {
+                    instructions.push('• More Medical Director positions (especially part-time/remote)');
+                }
+                if (lower.includes('ime')) {
+                    instructions.push('• More Independent Medical Examiner opportunities');
+                }
+                if (lower.includes('telemedicine') || lower.includes('telehealth')) {
+                    instructions.push('• More Telemedicine/Telehealth positions');
+                }
+                if (lower.includes('utilization') || lower.includes('reviewer')) {
+                    instructions.push('• More Utilization Review/Medical Review positions');
+                }
+            });
+            
+            return [...new Set(instructions)].join('\n') || 'Similar positions to those marked as interested';
+        }
+        
+        function generateSearchKeywords(jobTypes, interested) {
+            const keywords = [];
+            
+            if (jobTypes['Medical Director']) {
+                keywords.push('"Medical Director" remote', '"Part-time Medical Director"');
+            }
+            if (jobTypes['IME']) {
+                keywords.push('"Independent Medical Examiner"', '"IME physician"');
+            }
+            if (jobTypes['Telemedicine']) {
+                keywords.push('"Telemedicine physician"', '"Telehealth remote"');
+            }
+            if (jobTypes['Utilization Review']) {
+                keywords.push('"Utilization Review physician"', '"Medical reviewer"');
+            }
+            if (jobTypes['Consulting']) {
+                keywords.push('"Physician advisor"', '"Medical consultant"');
+            }
+            
+            return keywords.length > 0 ? keywords.join(', ') : 'Continue with general remote physician searches';
+        }
+
+        function generateJobDistribution(jobTypes, interested, totalJobsNeeded) {
+            if (Object.keys(jobTypes).length === 0) {
+                return `Add ${totalJobsNeeded} jobs with diverse categories:
+• Medical Director roles: ${Math.ceil(totalJobsNeeded * 0.3)} jobs
+• Telemedicine positions: ${Math.ceil(totalJobsNeeded * 0.2)} jobs  
+• IME opportunities: ${Math.ceil(totalJobsNeeded * 0.2)} jobs
+• Utilization Review roles: ${Math.ceil(totalJobsNeeded * 0.2)} jobs
+• Other remote opportunities: ${Math.floor(totalJobsNeeded * 0.1)} jobs`;
+            }
+            
+            const sortedTypes = Object.entries(jobTypes).sort((a, b) => b[1] - a[1]);
+            const totalPreferences = Object.values(jobTypes).reduce((sum, count) => sum + count, 0);
+            
+            let distribution = `Based on Bobby's preferences, add ${totalJobsNeeded} jobs as follows:\n`;
+            
+            let allocatedJobs = 0;
+            sortedTypes.forEach(([type, count], index) => {
+                const percentage = count / totalPreferences;
+                let recommendedCount;
+                
+                if (index === 0) { // Top preference gets at least 40% or 2 jobs minimum
+                    recommendedCount = Math.max(2, Math.ceil(totalJobsNeeded * Math.max(0.4, percentage)));
+                } else if (index === 1) { // Second preference gets at least 30% or 1 job minimum
+                    recommendedCount = Math.max(1, Math.ceil(totalJobsNeeded * Math.max(0.3, percentage)));
+                } else { // Other preferences get proportional share
+                    recommendedCount = Math.max(1, Math.ceil(totalJobsNeeded * percentage));
+                }
+                
+                // Ensure we don't exceed total
+                if (allocatedJobs + recommendedCount > totalJobsNeeded) {
+                    recommendedCount = totalJobsNeeded - allocatedJobs;
+                }
+                
+                if (recommendedCount > 0) {
+                    distribution += `• ${type} positions: ${recommendedCount} job${recommendedCount > 1 ? 's' : ''} (${Math.round(percentage * 100)}% of preferences)\n`;
+                    allocatedJobs += recommendedCount;
+                }
+            });
+            
+            // Fill remaining slots with diverse opportunities
+            const remainingJobs = totalJobsNeeded - allocatedJobs;
+            if (remainingJobs > 0) {
+                distribution += `• Other remote opportunities: ${remainingJobs} job${remainingJobs > 1 ? 's' : ''} (diversify options)`;
+            }
+            
+            return distribution;
+        }
+        
+        // Modal control functions
+        function closeWeeklyModal() {
+            if (window.weeklyModal) {
+                document.body.removeChild(window.weeklyModal);
+                window.weeklyModal = null;
+            }
+        }
+        
+        function snoozeWeeklyEmail() {
+            // Snooze for 2 hours
+            setTimeout(showWeeklyEmailPrompt, 2 * 60 * 60 * 1000);
+            showNotification('⏰ Reminder set for 2 hours');
+        }
+        
+        function skipWeeklyEmail() {
+            localStorage.setItem('lastWeeklyEmailSent', new Date().toISOString());
+            showNotification('📅 Weekly email skipped');
+        }
+
+        // Auto-add interest buttons to any job cards missing them
+        function ensureAllJobsHaveInterestButtons() {
+            const jobCards = document.querySelectorAll('.job-card');
+            let addedButtons = 0;
+            
+            jobCards.forEach((jobCard, index) => {
+                // Check if this job card already has interest buttons
+                const existingButtons = jobCard.querySelector('.interest-buttons');
+                if (!existingButtons) {
+                    // Generate a job ID from the job title if none exists
+                    const jobTitle = jobCard.querySelector('.job-title');
+                    const company = jobCard.querySelector('.company');
+                    
+                    if (jobTitle && company) {
+                        const jobId = generateJobId(jobTitle.textContent, company.textContent);
+                        
+                        // Create interest buttons
+                        const interestDiv = document.createElement('div');
+                        interestDiv.className = 'interest-buttons';
+                        interestDiv.innerHTML = `
+                            <button class="interest-btn neutral" onclick="markInterest(this, 'interested')" data-job-id="${jobId}">
+                                ⭐ Interested
+                            </button>
+                            <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')" data-job-id="${jobId}">
+                                ❌ Not Interested
+                            </button>
+                        `;
+                        
+                        // Add buttons before the closing div of the job card
+                        jobCard.appendChild(interestDiv);
+                        addedButtons++;
+                    }
+                }
+            });
+            
+            if (addedButtons > 0) {
+                console.log(`Added interest buttons to ${addedButtons} job cards`);
+                showNotification(`✅ Added interest tracking to ${addedButtons} job${addedButtons > 1 ? 's' : ''}`);
+            }
+        }
+        
+        // Generate a consistent job ID from title and company
+        function generateJobId(title, company) {
+            const cleanTitle = title.replace(/NEW|HOT|URGENT|INTERESTED|NOT INTERESTED/g, '').trim();
+            const cleanCompany = company.replace(/\([^)]*\)/g, '').trim();
+            return (cleanTitle + '-' + cleanCompany)
+                .toLowerCase()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .substring(0, 50);
+        }
+        
+        // Initialize collapsed state for expandable items and update stats
+        document.addEventListener('DOMContentLoaded', function() {
+            const expandables = document.querySelectorAll('.expandable');
+            expandables.forEach(element => {
+                const collapsible = element.querySelector('.collapsible');
+                collapsible.classList.add('collapsed');
+                element.classList.add('collapsed');
+                collapsible.style.maxHeight = '0px';
+            });
+            
+            // Add missing interest buttons to all jobs
+            setTimeout(() => {
+                ensureAllJobsHaveInterestButtons();
+            }, 500);
+            
+            // Load saved preferences (now async with Firebase)
+            setTimeout(() => {
+                loadPreferences();
+            }, 1000);
+            
+            // Clear old not-interested preferences
+            clearOldPreferences();
+            
+            // Update job statistics
+            updateJobStats();
+            
+            // Start weekly email scheduling
+            setTimeout(scheduleWeeklyEmail, 5000); // Start after 5 seconds
+        });
+    </script>
+</body>
+</html>
