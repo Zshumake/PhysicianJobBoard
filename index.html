@@ -8,21 +8,21 @@
     
     <!-- Firebase SDK -->
     <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp, query, where, orderBy, limit, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-        
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBk_52Fsux56J4XiS3QYLgyaWWlmm5cy-A",
-            authDomain: "physicianjobboard.firebaseapp.com",
-            projectId: "physicianjobboard",
-            storageBucket: "physicianjobboard.firebasestorage.app",
-            messagingSenderId: "697224609557",
-            appId: "1:697224609557:web:5316817d54a50b121db31c",
-            measurementId: "G-VJ8CRE299C"
-        };
-        
         try {
+            const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js');
+            const { getFirestore, doc, setDoc, getDoc, collection, addDoc, serverTimestamp, query, where, orderBy, limit, getDocs } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
+            
+            // Firebase configuration
+            const firebaseConfig = {
+                apiKey: "AIzaSyBk_52Fsux56J4XiS3QYLgyaWWlmm5cy-A",
+                authDomain: "physicianjobboard.firebaseapp.com",
+                projectId: "physicianjobboard",
+                storageBucket: "physicianjobboard.firebasestorage.app",
+                messagingSenderId: "697224609557",
+                appId: "1:697224609557:web:5316817d54a50b121db31c",
+                measurementId: "G-VJ8CRE299C"
+            };
+            
             // Initialize Firebase
             const app = initializeApp(firebaseConfig);
             const db = getFirestore(app);
@@ -41,7 +41,6 @@
             window.firebaseLimit = limit;
             window.firebaseGetDocs = getDocs;
             
-            // Test connection
             console.log('✅ Firebase initialized successfully');
             window.firebaseReady = true;
             
@@ -50,8 +49,11 @@
             
         } catch (error) {
             console.error('❌ Firebase initialization failed:', error);
+            console.log('📱 App will continue with localStorage only');
             window.firebaseReady = false;
-            // Still allow app to function with localStorage only
+            
+            // Dispatch event even when Firebase fails so the app knows to proceed
+            window.dispatchEvent(new CustomEvent('firebaseReady'));
         }
     </script>
     
@@ -1571,90 +1573,127 @@
             document.getElementById('new-this-week').textContent = newThisWeek;
         }
 
+        // Ensure Firebase readiness is set after a timeout (failsafe)
+        setTimeout(() => {
+            if (window.firebaseReady === undefined) {
+                console.log('🕒 Firebase timeout - proceeding with localStorage only');
+                window.firebaseReady = false;
+                window.dispatchEvent(new CustomEvent('firebaseReady'));
+            }
+        }, 5000);
+
         // Interest tracking system
         async function markInterest(button, type) {
-            const jobId = button.getAttribute('data-job-id');
-            const jobCard = button.closest('.job-card');
-            const jobTitle = jobCard.querySelector('.job-title');
-            const buttons = jobCard.querySelectorAll('.interest-btn');
-            
-            const preferenceData = {
-                type: type,
-                timestamp: new Date().toISOString(),
-                jobTitle: jobTitle.textContent.replace(/NEW|HOT|URGENT/g, '').trim(),
-                jobId: jobId
-            };
-            
-            // Save preference to localStorage (for immediate UI updates)
-            let preferences = JSON.parse(localStorage.getItem('jobPreferences') || '{}');
-            preferences[jobId] = preferenceData;
-            localStorage.setItem('jobPreferences', JSON.stringify(preferences));
-            
-            // Save to Firebase (for persistence and remote access)
-            if (window.firebaseReady && window.firebaseDB) {
-                try {
-                    const docRef = window.firebaseDoc(window.firebaseDB, 'jobPreferences', jobId);
-                    await window.firebaseSetDoc(docRef, {
-                        ...preferenceData,
-                        serverTimestamp: window.firebaseServerTimestamp()
-                    });
-                    console.log('✅ Preference saved to Firebase:', jobId, type);
-                    
-                    // Also add to activity log for email system
-                    await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDB, 'activityLog'), {
-                        action: 'job_preference',
-                        jobId: jobId,
-                        preferenceType: type,
-                        jobTitle: preferenceData.jobTitle,
-                        timestamp: window.firebaseServerTimestamp(),
-                        userAgent: navigator.userAgent
-                    });
-                    console.log('✅ Activity logged to Firebase');
-                    
-                } catch (error) {
-                    console.error('❌ Firebase save failed:', error);
-                    console.log('📱 Data saved to localStorage as backup');
-                    
-                    // Show user a specific error message
-                    if (error.code === 'permission-denied') {
-                        console.error('🚫 Firebase permission denied. Please check Firestore security rules.');
-                        showNotification('⚠️ Preference saved locally. Firebase permissions need configuration.');
-                    }
+            try {
+                console.log('🖱️ markInterest called:', type);
+                
+                const jobId = button.getAttribute('data-job-id');
+                const jobCard = button.closest('.job-card');
+                const jobTitle = jobCard.querySelector('.job-title');
+                const buttons = jobCard.querySelectorAll('.interest-btn');
+                
+                if (!jobId || !jobCard || !jobTitle) {
+                    console.error('❌ Missing required elements for job:', jobId);
+                    showNotification('❌ Error: Could not find job elements');
+                    return;
                 }
-            } else {
-                console.log('📱 Firebase not ready, using localStorage only');
+                
+                const preferenceData = {
+                    type: type,
+                    timestamp: new Date().toISOString(),
+                    jobTitle: jobTitle.textContent.replace(/NEW|HOT|URGENT/g, '').trim(),
+                    jobId: jobId
+                };
+                
+                // Save preference to localStorage (always works)
+                try {
+                    let preferences = JSON.parse(localStorage.getItem('jobPreferences') || '{}');
+                    preferences[jobId] = preferenceData;
+                    localStorage.setItem('jobPreferences', JSON.stringify(preferences));
+                    console.log('✅ Preference saved to localStorage:', jobId, type);
+                } catch (e) {
+                    console.error('❌ localStorage save failed:', e);
+                }
+                
+                // Update UI immediately (don't wait for Firebase)
+                jobCard.className = 'job-card ' + type;
+                
+                // Update buttons
+                buttons.forEach(btn => {
+                    btn.className = 'interest-btn neutral';
+                    btn.disabled = false;
+                });
+                button.className = 'interest-btn ' + type;
+                button.disabled = true;
+                
+                // Add status indicator to job title
+                let existingStatus = jobTitle.querySelector('.interest-status');
+                if (existingStatus) {
+                    existingStatus.remove();
+                }
+                
+                if (type !== 'neutral') {
+                    const statusSpan = document.createElement('span');
+                    statusSpan.className = 'interest-status ' + type;
+                    statusSpan.textContent = type === 'interested' ? 'INTERESTED' : 'NOT INTERESTED';
+                    jobTitle.appendChild(statusSpan);
+                }
+                
+                // Update job stats
+                updateJobStats();
+                
+                // Show confirmation message
+                showNotification(type === 'interested' ? 'Job marked as interested! It will be prioritized in future updates.' : 'Job marked as not interested. It will be removed in the next weekly update.');
+                
+                // Try to save to Firebase (non-blocking)
+                if (window.firebaseReady && window.firebaseDB) {
+                    try {
+                        const docRef = window.firebaseDoc(window.firebaseDB, 'jobPreferences', jobId);
+                        await window.firebaseSetDoc(docRef, {
+                            ...preferenceData,
+                            serverTimestamp: window.firebaseServerTimestamp()
+                        });
+                        console.log('✅ Preference saved to Firebase:', jobId, type);
+                        
+                        // Also add to activity log for email system
+                        await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDB, 'activityLog'), {
+                            action: 'job_preference',
+                            jobId: jobId,
+                            preferenceType: type,
+                            jobTitle: preferenceData.jobTitle,
+                            timestamp: window.firebaseServerTimestamp(),
+                            userAgent: navigator.userAgent
+                        });
+                        console.log('✅ Activity logged to Firebase');
+                        
+                    } catch (error) {
+                        console.error('❌ Firebase save failed:', error);
+                        // UI already updated, so Firebase failure doesn't affect user experience
+                    }
+                } else {
+                    console.log('📱 Firebase not ready, using localStorage only');
+                }
+                
+            } catch (error) {
+                console.error('❌ markInterest function failed:', error);
+                showNotification('❌ Error marking job preference. Please try again.');
             }
-            
-            // Update UI
-            jobCard.className = 'job-card ' + type;
-            
-            // Update buttons
-            buttons.forEach(btn => {
-                btn.className = 'interest-btn neutral';
-                btn.disabled = false;
-            });
-            button.className = 'interest-btn ' + type;
-            button.disabled = true;
-            
-            // Add status indicator to job title
-            let existingStatus = jobTitle.querySelector('.interest-status');
-            if (existingStatus) {
-                existingStatus.remove();
-            }
-            
-            if (type !== 'neutral') {
-                const statusSpan = document.createElement('span');
-                statusSpan.className = 'interest-status ' + type;
-                statusSpan.textContent = type === 'interested' ? 'INTERESTED' : 'NOT INTERESTED';
-                jobTitle.appendChild(statusSpan);
-            }
-            
-            // Update job stats
-            updateJobStats();
-            
-            // Show confirmation message
-            showNotification(type === 'interested' ? 'Job marked as interested! It will be prioritized in future updates.' : 'Job marked as not interested. It will be removed in the next weekly update.');
         }
+
+        // Debug function to test buttons (can be called from console)
+        window.testButtons = function() {
+            const buttons = document.querySelectorAll('.interest-btn');
+            console.log(`Found ${buttons.length} interest buttons`);
+            
+            buttons.forEach((button, index) => {
+                const jobId = button.getAttribute('data-job-id');
+                const onclick = button.getAttribute('onclick');
+                console.log(`Button ${index + 1}: jobId=${jobId}, onclick=${onclick}`);
+            });
+            
+            console.log('markInterest function exists:', typeof markInterest);
+            console.log('Firebase ready:', window.firebaseReady);
+        };
 
         // Show notification
         function showNotification(message) {
