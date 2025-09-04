@@ -690,6 +690,15 @@
             </ul>
         </div>
         
+        <!-- BOBBY'S FAVORITE JOBS -->
+        <div id="favorites-section" class="favorites-section" style="display: none;">
+            <div class="new-section" style="background: linear-gradient(45deg, #f59e0b, #d97706); color: white; padding: 15px; border-radius: 8px; margin: 20px 0; text-align: center;">
+                ⭐ BOBBY'S FAVORITE POSITIONS ⭐
+                <br><small style="opacity: 0.9;">Jobs you've marked as "Interested" - Your top priorities</small>
+            </div>
+            <div id="favorites-container"></div>
+        </div>
+
         <!-- HIGH PRIORITY REMOTE POSITIONS -->
         <div class="new-section">
             🎯 TOP REMOTE LOW-STRESS OPPORTUNITIES
@@ -1909,8 +1918,9 @@
                     jobTitle.appendChild(statusSpan);
                 }
                 
-                // Update job stats
+                // Update job stats and favorites section
                 updateJobStats();
+                populateFavoritesSection();
                 
                 // Show confirmation message
                 showNotification(type === 'interested' ? 'Job marked as interested! It will be prioritized in future updates.' : 'Job marked as not interested. It will be removed in the next weekly update.');
@@ -1991,7 +2001,7 @@
             }, 3000);
         }
 
-        // Load saved preferences
+        // Load saved preferences and populate favorites
         function loadPreferences() {
             const preferences = JSON.parse(localStorage.getItem('jobPreferences') || '{}');
             
@@ -2022,6 +2032,56 @@
                         jobTitle.appendChild(statusSpan);
                     }
                 }
+            }
+            
+            // Populate favorites section after loading preferences
+            populateFavoritesSection();
+        }
+        
+        // Populate the favorites section with interested jobs
+        function populateFavoritesSection() {
+            const preferences = JSON.parse(localStorage.getItem('jobPreferences') || '{}');
+            const favoritesSection = document.getElementById('favorites-section');
+            const favoritesContainer = document.getElementById('favorites-container');
+            
+            if (!favoritesSection || !favoritesContainer) return;
+            
+            // Find all interested jobs
+            const interestedJobs = [];
+            for (const [jobId, preference] of Object.entries(preferences)) {
+                if (preference.type === 'interested') {
+                    const jobCard = document.querySelector(`[data-job-id="${jobId}"]`)?.closest('.job-card');
+                    if (jobCard) {
+                        interestedJobs.push(jobCard.cloneNode(true));
+                    }
+                }
+            }
+            
+            if (interestedJobs.length > 0) {
+                // Show favorites section and populate it
+                favoritesSection.style.display = 'block';
+                favoritesContainer.innerHTML = '';
+                
+                interestedJobs.forEach(jobCard => {
+                    // Add favorite styling
+                    jobCard.style.border = '2px solid #f59e0b';
+                    jobCard.style.boxShadow = '0 4px 12px rgba(245, 158, 11, 0.3)';
+                    
+                    // Add favorite badge
+                    const jobHeader = jobCard.querySelector('.job-header');
+                    if (jobHeader && !jobHeader.querySelector('.favorite-badge')) {
+                        const favoriteBadge = document.createElement('div');
+                        favoriteBadge.className = 'favorite-badge';
+                        favoriteBadge.innerHTML = '⭐ FAVORITE';
+                        favoriteBadge.style.cssText = 'background: #f59e0b; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-left: 10px;';
+                        jobHeader.appendChild(favoriteBadge);
+                    }
+                    
+                    favoritesContainer.appendChild(jobCard);
+                });
+            } else {
+                // Hide favorites section if no favorites
+                favoritesSection.style.display = 'none';
             }
         }
 
@@ -2293,25 +2353,37 @@
 
         // Email preferences to Zach
         function emailPreferences(summary) {
-            const subject = `Bobby's Job Board Preferences - ${new Date().toLocaleDateString()}`;
+            const subject = `🎯 Bobby's Job Preferences Update - ${new Date().toLocaleDateString()}`;
             const body = `Hi Zach,
 
-Here are my current job preferences for the weekly job board update:
+Here are my updated job preferences for the weekly job board optimization:
 
 ${summary}
 
-Please use this information to:
-1. Remove jobs I've marked as "not interested" 
-2. Prioritize similar jobs to ones I've marked as "interested"
-3. Focus searches on my preferred job types
+📋 REQUESTED ACTIONS:
+1. ❌ REMOVE all jobs I've marked as "not interested" from the job board
+2. ⭐ ADD MORE jobs similar to ones I've marked as "interested" 
+3. 🎯 PRIORITIZE job searches in my preferred categories
+4. 📈 UPDATE the favorites section with my interested positions
 
-Thanks!
-Bobby`;
+This will help you curate the job board to match my PM&R/Spine expertise and preferences.
+
+Thanks for keeping the job board optimized!
+Bobby
+
+---
+Generated automatically from PhysicianJobBoard on ${new Date().toLocaleString()}`;
 
             const mailtoLink = `mailto:shumaker.zach865@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
             
-            // Open email client
+            // Open email client and show confirmation
             window.location.href = mailtoLink;
+            
+            // Show success notification
+            setTimeout(() => {
+                showNotification('📧 Email composed! Send it to share your preferences with Zach.');
+                closeModal();
+            }, 1000);
             
             showNotification('📧 Email opened! Send when ready.');
             closeModal();
