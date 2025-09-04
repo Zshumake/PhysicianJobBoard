@@ -1824,7 +1824,7 @@
     </div>
 
     <script>
-        function toggleExpand(element) {
+        window.toggleExpand = function(element) {
             const collapsible = element.querySelector('.collapsible');
             
             if (collapsible.classList.contains('collapsed')) {
@@ -1865,7 +1865,8 @@
         }, 5000);
 
         // Interest tracking system
-        async function markInterest(button, type) {
+        // Mark job as interested or not interested
+        window.markInterest = async function(button, type) {
             try {
                 console.log('🖱️ markInterest called:', type);
                 
@@ -1881,12 +1882,12 @@
                 }
                 
                 // Extract comprehensive job details
-                const jobCard = button.closest('.job-card');
-                const company = jobCard.querySelector('.company')?.textContent?.trim() || 'Unknown Company';
-                const salary = jobCard.querySelector('.salary')?.textContent?.trim() || 'Salary not specified';
-                const jobDescription = jobCard.querySelector('.job-description h4')?.nextElementSibling?.textContent?.trim() || '';
-                const requirements = jobCard.querySelector('.requirements ul')?.textContent?.trim() || '';
-                const location = jobCard.querySelector('.detail-row')?.textContent?.trim() || '';
+                const jobCardElement = button.closest('.job-card');
+                const company = jobCardElement.querySelector('.company')?.textContent?.trim() || 'Unknown Company';
+                const salary = jobCardElement.querySelector('.salary')?.textContent?.trim() || 'Salary not specified';
+                const jobDescription = jobCardElement.querySelector('.job-description h4')?.nextElementSibling?.textContent?.trim() || '';
+                const requirements = jobCardElement.querySelector('.requirements ul')?.textContent?.trim() || '';
+                const location = jobCardElement.querySelector('.detail-row')?.textContent?.trim() || '';
                 
                 const preferenceData = {
                     type: type,
@@ -2238,7 +2239,7 @@
         }
 
         // Show preference summary in a popup for easy sharing
-        function showPreferenceSummary() {
+        window.showPreferenceSummary = function() {
             const preferences = JSON.parse(localStorage.getItem('jobPreferences') || '{}');
             const summary = generateQuickSummary(preferences);
             
@@ -2355,7 +2356,7 @@
         }
 
         // Close modal
-        function closeModal() {
+        window.closeModal = function() {
             if (window.currentModal) {
                 document.body.removeChild(window.currentModal);
                 window.currentModal = null;
@@ -2363,7 +2364,7 @@
         }
 
         // Copy to clipboard
-        function copyToClipboard(text) {
+        window.copyToClipboard = function(text) {
             navigator.clipboard.writeText(text).then(() => {
                 showNotification('✅ Preferences copied! Share this with your weekly update system.');
             }).catch(() => {
@@ -2379,7 +2380,7 @@
         }
 
         // Email preferences to Zach
-        function emailPreferences(summary) {
+        window.emailPreferences = function(summary) {
             const subject = `🎯 Bobby's Job Preferences Update - ${new Date().toLocaleDateString()}`;
             const body = `Hi Zach,
 
@@ -2437,7 +2438,7 @@ Generated automatically from PhysicianJobBoard on ${new Date().toLocaleString()}
         }
         
         // Test Firebase connection
-        async function testFirebaseConnection() {
+        window.testFirebaseConnection = async function() {
             console.log('🔥 Testing Firebase Connection...');
             console.log('  - firebaseReady:', window.firebaseReady);
             console.log('  - firebaseDB exists:', !!window.firebaseDB);
