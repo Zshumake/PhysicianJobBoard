@@ -49,6 +49,8 @@
             
         } catch (error) {
             console.error('❌ Firebase initialization failed:', error);
+            console.error('❌ Error details:', error.message);
+            console.error('❌ Error stack:', error.stack);
             console.log('📱 App will continue with localStorage only');
             window.firebaseReady = false;
             
@@ -1818,6 +1820,7 @@
         <strong>Active Jobs:</strong> <span id="total-jobs">32</span> • 
         <strong>New This Week:</strong> <span id="new-this-week">6</span> • 
         <button onclick="showPreferenceSummary()" style="background:#4299e1;color:white;border:none;padding:5px 10px;border-radius:4px;margin-left:10px;cursor:pointer;font-size:0.8rem;">📋 Share Preferences</button>
+        <button onclick="testFirebaseConnection()" style="background:#e53e3e;color:white;border:none;padding:5px 10px;border-radius:4px;margin-left:10px;cursor:pointer;font-size:0.8rem;">🔥 Test Firebase</button>
     </div>
 
     <script>
@@ -1877,11 +1880,25 @@
                     return;
                 }
                 
+                // Extract comprehensive job details
+                const jobCard = button.closest('.job-card');
+                const company = jobCard.querySelector('.company')?.textContent?.trim() || 'Unknown Company';
+                const salary = jobCard.querySelector('.salary')?.textContent?.trim() || 'Salary not specified';
+                const jobDescription = jobCard.querySelector('.job-description h4')?.nextElementSibling?.textContent?.trim() || '';
+                const requirements = jobCard.querySelector('.requirements ul')?.textContent?.trim() || '';
+                const location = jobCard.querySelector('.detail-row')?.textContent?.trim() || '';
+                
                 const preferenceData = {
                     type: type,
                     timestamp: new Date().toISOString(),
-                    jobTitle: jobTitle.textContent.replace(/NEW|HOT|URGENT/g, '').trim(),
-                    jobId: jobId
+                    jobTitle: jobTitle.textContent.replace(/NEW|HOT|URGENT|INTERESTED|NOT INTERESTED/g, '').trim(),
+                    jobId: jobId,
+                    company: company,
+                    salary: salary,
+                    location: location,
+                    jobDescription: jobDescription.substring(0, 200), // First 200 chars
+                    hasRequirements: requirements.length > 0,
+                    jobCategory: determineJobCategory(jobTitle.textContent, company, jobDescription)
                 };
                 
                 // Save preference to localStorage (always works)
@@ -1941,8 +1958,13 @@
                             jobId: jobId,
                             preferenceType: type,
                             jobTitle: preferenceData.jobTitle,
+                            company: preferenceData.company,
+                            salary: preferenceData.salary,
+                            jobCategory: preferenceData.jobCategory,
+                            location: preferenceData.location,
                             timestamp: window.firebaseServerTimestamp(),
-                            userAgent: navigator.userAgent
+                            userAgent: navigator.userAgent,
+                            sessionId: Date.now() // To track browsing sessions
                         });
                         console.log('✅ Activity logged to Firebase');
                         
@@ -1952,6 +1974,11 @@
                     }
                 } else {
                     console.log('📱 Firebase not ready, using localStorage only');
+                    console.log('🔍 Firebase Debug Info:');
+                    console.log('  - firebaseReady:', window.firebaseReady);
+                    console.log('  - firebaseDB exists:', !!window.firebaseDB);
+                    console.log('  - firebaseDoc exists:', !!window.firebaseDoc);
+                    console.log('  - firebaseSetDoc exists:', !!window.firebaseSetDoc);
                 }
                 
             } catch (error) {
@@ -2387,6 +2414,54 @@ Generated automatically from PhysicianJobBoard on ${new Date().toLocaleString()}
             
             showNotification('📧 Email opened! Send when ready.');
             closeModal();
+        }
+        
+        // Determine job category for better analysis
+        function determineJobCategory(title, company, description) {
+            const titleLower = title.toLowerCase();
+            const descLower = description.toLowerCase();
+            
+            if (titleLower.includes('medical director') || titleLower.includes('director')) return 'Medical Director';
+            if (titleLower.includes('ime') || titleLower.includes('independent medical examiner')) return 'IME';
+            if (titleLower.includes('utilization review') || titleLower.includes('reviewer')) return 'Utilization Review';
+            if (titleLower.includes('medical science liaison') || titleLower.includes('msl')) return 'MSL';
+            if (titleLower.includes('telemedicine') || titleLower.includes('telehealth')) return 'Telemedicine';
+            if (titleLower.includes('pm&r') || titleLower.includes('physical medicine') || titleLower.includes('physiatry')) return 'PM&R Specialty';
+            if (titleLower.includes('spine') || descLower.includes('spine')) return 'Spine Specialty';
+            if (titleLower.includes('expert witness') || titleLower.includes('legal')) return 'Expert Witness';
+            if (titleLower.includes('advisor') || titleLower.includes('consultant')) return 'Medical Advisor';
+            if (titleLower.includes('writer') || titleLower.includes('writing')) return 'Medical Writing';
+            if (titleLower.includes('pharmaceutical') || titleLower.includes('biotech')) return 'Pharmaceutical';
+            
+            return 'Other';
+        }
+        
+        // Test Firebase connection
+        async function testFirebaseConnection() {
+            console.log('🔥 Testing Firebase Connection...');
+            console.log('  - firebaseReady:', window.firebaseReady);
+            console.log('  - firebaseDB exists:', !!window.firebaseDB);
+            
+            if (window.firebaseReady && window.firebaseDB) {
+                try {
+                    // Test write to Firebase
+                    const testDoc = window.firebaseDoc(window.firebaseDB, 'test', 'connection-test');
+                    await window.firebaseSetDoc(testDoc, {
+                        message: 'Firebase connection test',
+                        timestamp: window.firebaseServerTimestamp(),
+                        testTime: new Date().toISOString()
+                    });
+                    
+                    console.log('✅ Firebase connection successful!');
+                    showNotification('✅ Firebase connected! Check console for details.');
+                } catch (error) {
+                    console.error('❌ Firebase test failed:', error);
+                    showNotification('❌ Firebase test failed. Check console for details.');
+                }
+            } else {
+                console.log('❌ Firebase not ready or not initialized');
+                showNotification('❌ Firebase not ready. Check console for details.');
+            }
         }
 
         // Download summary
