@@ -1,0 +1,1082 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2822
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 <!DOCTYPE html>\
+\
+<html lang="en">\
+<head>\
+    <meta charset="UTF-8">\
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">\
+    <title>Physician Career Opportunities</title>\
+    <style>\
+        * \{\
+            margin: 0;\
+            padding: 0;\
+            box-sizing: border-box;\
+        \}\
+\
+        body \{\
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;\
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\
+            min-height: 100vh;\
+            padding: 10px;\
+        \}\
+        \
+        .container \{\
+            max-width: 100%;\
+            background: white;\
+            border-radius: 15px;\
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);\
+            overflow: hidden;\
+        \}\
+        \
+        .header \{\
+            background: linear-gradient(135deg, #2c5282 0%, #3182ce 100%);\
+            color: white;\
+            padding: 20px;\
+            text-align: center;\
+        \}\
+        \
+        .header h1 \{\
+            font-size: 1.5rem;\
+            margin-bottom: 5px;\
+        \}\
+        \
+        .header p \{\
+            opacity: 0.9;\
+            font-size: 0.9rem;\
+        \}\
+        \
+        .stats \{\
+            display: flex;\
+            justify-content: space-around;\
+            background: #f8f9fa;\
+            padding: 15px;\
+            border-bottom: 1px solid #e2e8f0;\
+        \}\
+        \
+        .stat \{\
+            text-align: center;\
+        \}\
+        \
+        .stat-number \{\
+            font-size: 1.2rem;\
+            font-weight: bold;\
+            color: #2d3748;\
+        \}\
+        \
+        .stat-label \{\
+            font-size: 0.8rem;\
+            color: #718096;\
+        \}\
+        \
+        .job-card \{\
+            border-bottom: 1px solid #e2e8f0;\
+            padding: 15px;\
+            transition: background-color 0.2s;\
+        \}\
+        \
+        .job-card:last-child \{\
+            border-bottom: none;\
+        \}\
+        \
+        .job-card:hover \{\
+            background-color: #f8f9fa;\
+        \}\
+        \
+        .job-header \{\
+            display: flex;\
+            justify-content: space-between;\
+            align-items: flex-start;\
+            margin-bottom: 10px;\
+            flex-wrap: wrap;\
+        \}\
+        \
+        .job-title \{\
+            font-weight: bold;\
+            color: #2d3748;\
+            font-size: 1rem;\
+            flex: 1;\
+            min-width: 200px;\
+        \}\
+        \
+        .salary \{\
+            background: #48bb78;\
+            color: white;\
+            padding: 4px 8px;\
+            border-radius: 12px;\
+            font-size: 0.8rem;\
+            font-weight: bold;\
+            margin-left: 10px;\
+            white-space: nowrap;\
+        \}\
+        \
+        .company \{\
+            color: #4299e1;\
+            font-weight: 600;\
+            font-size: 0.9rem;\
+            margin-bottom: 8px;\
+        \}\
+        \
+        .job-details \{\
+            display: grid;\
+            grid-template-columns: 1fr;\
+            gap: 8px;\
+            margin-bottom: 10px;\
+        \}\
+        \
+        .detail-row \{\
+            display: flex;\
+            align-items: center;\
+            font-size: 0.85rem;\
+        \}\
+        \
+        .detail-icon \{\
+            width: 16px;\
+            height: 16px;\
+            margin-right: 8px;\
+            flex-shrink: 0;\
+        \}\
+        \
+        .remote-badge \{\
+            background: #ed8936;\
+            color: white;\
+            padding: 2px 6px;\
+            border-radius: 8px;\
+            font-size: 0.7rem;\
+            font-weight: bold;\
+        \}\
+        \
+        .remote-badge.fully-remote \{\
+            background: #48bb78;\
+        \}\
+        \
+        .remote-badge.hybrid \{\
+            background: #4299e1;\
+        \}\
+        \
+        .remote-badge.onsite \{\
+            background: #e53e3e;\
+        \}\
+        \
+        .contact-info \{\
+            background: #edf2f7;\
+            padding: 10px;\
+            border-radius: 8px;\
+            margin-top: 10px;\
+        \}\
+        \
+        .contact-info strong \{\
+            color: #2d3748;\
+            font-size: 0.8rem;\
+        \}\
+        \
+        .contact-info div \{\
+            font-size: 0.75rem;\
+            color: #4a5568;\
+            margin-top: 3px;\
+        \}\
+        \
+        .deadline \{\
+            background: #fed7d7;\
+            color: #c53030;\
+            padding: 4px 8px;\
+            border-radius: 6px;\
+            font-size: 0.75rem;\
+            font-weight: bold;\
+            margin-top: 8px;\
+            display: inline-block;\
+        \}\
+        \
+        .deadline.urgent \{\
+            background: #fc8181;\
+            animation: pulse 2s infinite;\
+        \}\
+        \
+        @keyframes pulse \{\
+            0% \{ opacity: 1; \}\
+            50% \{ opacity: 0.7; \}\
+            100% \{ opacity: 1; \}\
+        \}\
+        \
+        .priority \{\
+            background: #ffd89b;\
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);\
+            color: white;\
+            padding: 3px 8px;\
+            border-radius: 10px;\
+            font-size: 0.7rem;\
+            font-weight: bold;\
+            margin-left: 5px;\
+        \}\
+        \
+        .new-section \{\
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\
+            color: white;\
+            padding: 15px 20px;\
+            margin: 0;\
+            font-weight: bold;\
+            font-size: 1.1rem;\
+        \}\
+        \
+        .expandable \{\
+            cursor: pointer;\
+        \}\
+        \
+        .expandable::after \{\
+            content: " \uc0\u9660 ";\
+            font-size: 0.7rem;\
+            color: #718096;\
+        \}\
+        \
+        .expandable.collapsed::after \{\
+            content: " \uc0\u9654 ";\
+        \}\
+        \
+        .collapsible \{\
+            transition: max-height 0.3s ease;\
+            overflow: hidden;\
+        \}\
+        \
+        .collapsible.collapsed \{\
+            max-height: 0;\
+        \}\
+        \
+        .footer \{\
+            background: #2d3748;\
+            color: white;\
+            padding: 20px;\
+            text-align: center;\
+        \}\
+        \
+        .footer h3 \{\
+            margin-bottom: 10px;\
+            font-size: 1.1rem;\
+        \}\
+        \
+        .footer p \{\
+            font-size: 0.9rem;\
+            opacity: 0.9;\
+            line-height: 1.4;\
+        \}\
+        \
+        @media (max-width: 480px) \{\
+            .stats \{\
+                flex-direction: column;\
+                gap: 10px;\
+            \}\
+            \
+            .job-header \{\
+                flex-direction: column;\
+                align-items: flex-start;\
+            \}\
+            \
+            .salary \{\
+                margin-left: 0;\
+                margin-top: 5px;\
+            \}\
+        \}\
+    </style>\
+</head>\
+<body>\
+    <div class="container">\
+        <div class="header">\
+            <h1>\uc0\u55356 \u57317  Physician Career Opportunities</h1>\
+            <p>Interventional Spine & EMG Expertise \'95 August 2025</p>\
+        </div>\
+\
+        <div class="stats">\
+            <div class="stat">\
+                <div class="stat-number">50+</div>\
+                <div class="stat-label">Total Jobs</div>\
+            </div>\
+            <div class="stat">\
+                <div class="stat-number">$48-$507K</div>\
+                <div class="stat-label">Salary Range</div>\
+            </div>\
+            <div class="stat">\
+                <div class="stat-number">60%</div>\
+                <div class="stat-label">Remote</div>\
+            </div>\
+            <div class="stat">\
+                <div class="stat-number">12+</div>\
+                <div class="stat-label">NC Jobs</div>\
+            </div>\
+        </div>\
+        \
+        <!-- HIGH PRIORITY JOBS -->\
+        <div class="job-card">\
+            <div class="job-header">\
+                <div class="job-title">CDC Physician (Public Health) <span class="priority">URGENT</span></div>\
+                <div class="salary">$100K-$200K+</div>\
+            </div>\
+            <div class="company">Centers for Disease Control and Prevention</div>\
+            <div class="job-details">\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56525  Atlanta, GA + Field Locations\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u9200  Standard Federal Hours\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56507  <span class="remote-badge onsite">NO REMOTE</span> (Policy change Jan 2025)\
+                </div>\
+            </div>\
+            <div class="deadline urgent">DEADLINE: January 30, 2025</div>\
+            <div class="contact-info">\
+                <strong>Contact:</strong>\
+                <div>USAJobs Announcement #794785600</div>\
+                <div>GS-12 to GS-15 + 25-35% locality + up to $30K PCA</div>\
+            </div>\
+        </div>\
+        \
+        <div class="job-card">\
+            <div class="job-header">\
+                <div class="job-title">Independent Medical Examiner <span class="priority">IMMEDIATE</span></div>\
+                <div class="salary">$441/hr</div>\
+            </div>\
+            <div class="company">ExamWorks</div>\
+            <div class="job-details">\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56525  Nationwide (Your Office)\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u9200  Flexible Part-Time\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56507  <span class="remote-badge hybrid">Hybrid</span>\
+                </div>\
+            </div>\
+            <div class="contact-info">\
+                <strong>Contact:</strong>\
+                <div>Erica Seversen: (206) 200-7171</div>\
+                <div>erica.seversen@examworks.com</div>\
+                <div>$955 no-show fee included</div>\
+            </div>\
+        </div>\
+        \
+        <div class="job-card">\
+            <div class="job-header">\
+                <div class="job-title">Part-Time Medical Director <span class="priority">IMMEDIATE</span></div>\
+                <div class="salary">$70K/year</div>\
+            </div>\
+            <div class="company">CHS Recruiting</div>\
+            <div class="job-details">\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56525  Remote Position\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u9200  10-15 Hours/Week\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56507  <span class="remote-badge fully-remote">100% Remote</span>\
+                </div>\
+            </div>\
+            <div class="contact-info">\
+                <strong>Contact:</strong>\
+                <div>Jenn Kunkel: (773) 998-1272</div>\
+                <div>jenn@chsrecruiting.com</div>\
+                <div>~200 claims monthly review</div>\
+            </div>\
+        </div>\
+\
+        <!-- REMOTE NON-CLINICAL SECTION -->\
+        <div class="new-section">\
+            \uc0\u55356 \u57312  REMOTE NON-CLINICAL OPPORTUNITIES - SPINE EXPERTISE VALUED\
+        </div>\
+\
+        <!-- HEALTHCARE VENTURE CAPITAL -->\
+        <div class="job-card">\
+            <div class="job-header">\
+                <div class="job-title">Healthcare Investment Advisor <span class="priority">HIGH VALUE</span></div>\
+                <div class="salary">$131K-$273K</div>\
+            </div>\
+            <div class="company">Healthcare Shares</div>\
+            <div class="job-details">\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56525  Fort Worth, TX (Fully Remote Available)\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u9200  Full-Time/Part-Time Options\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56507  <span class="remote-badge fully-remote">100% Remote</span>\
+                </div>\
+            </div>\
+            <div class="contact-info">\
+                <strong>Contact:</strong>\
+                <div>healthcareshares.com careers</div>\
+                <div>Spine device investment evaluation</div>\
+                <div>Multiple physician advisor openings</div>\
+            </div>\
+        </div>\
+\
+        <!-- INSURANCE MEDICAL DIRECTORS -->\
+        <div class="job-card">\
+            <div class="job-header">\
+                <div class="job-title">Medical Director - Utilization Management <span class="priority">TOP PAY</span></div>\
+                <div class="salary">$269K-$425K</div>\
+            </div>\
+            <div class="company">UnitedHealth Group/Optum</div>\
+            <div class="job-details">\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56525  Multiple States (Remote)\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u9200  Full-Time\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56507  <span class="remote-badge fully-remote">100% Remote</span>\
+                </div>\
+            </div>\
+            <div class="contact-info">\
+                <strong>Contact:</strong>\
+                <div>careers.unitedhealthgroup.com</div>\
+                <div>Spine procedure expertise crucial</div>\
+                <div>Complex MSK case reviews</div>\
+            </div>\
+        </div>\
+\
+        <div class="job-card">\
+            <div class="job-header">\
+                <div class="job-title">National Medical Director <span class="priority">TOP PAY</span></div>\
+                <div class="salary">$287K-$507K</div>\
+            </div>\
+            <div class="company">CVS Health/Aetna</div>\
+            <div class="job-details">\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56525  Remote Nationwide\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u9200  Full-Time\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56507  <span class="remote-badge fully-remote">100% Remote</span>\
+                </div>\
+            </div>\
+            <div class="contact-info">\
+                <strong>Contact:</strong>\
+                <div>jobs.cvshealth.com</div>\
+                <div>Clinical policy development</div>\
+                <div>Evidence-based coverage decisions</div>\
+            </div>\
+        </div>\
+\
+        <div class="job-card">\
+            <div class="job-header">\
+                <div class="job-title">Medical Director - Post Acute Care</div>\
+                <div class="salary">$249K-$449K</div>\
+            </div>\
+            <div class="company">Anthem/Elevance Health</div>\
+            <div class="job-details">\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56525  Remote with ~10% Travel\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u9200  Full-Time\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56507  <span class="remote-badge hybrid">Remote + Travel</span>\
+                </div>\
+            </div>\
+            <div class="contact-info">\
+                <strong>Contact:</strong>\
+                <div>careers.elevancehealth.com</div>\
+                <div>Post-surgical spine care pathways</div>\
+            </div>\
+        </div>\
+\
+        <!-- PHARMACEUTICAL COMPANIES -->\
+        <div class="job-card">\
+            <div class="job-header">\
+                <div class="job-title">Clinical Research Medical Director</div>\
+                <div class="salary">$261K-$329K</div>\
+            </div>\
+            <div class="company">Amgen</div>\
+            <div class="job-details">\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56525  Remote US\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u9200  Full-Time\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56507  <span class="remote-badge fully-remote">100% Remote</span>\
+                </div>\
+            </div>\
+            <div class="contact-info">\
+                <strong>Contact:</strong>\
+                <div>careers.amgen.com</div>\
+                <div>5+ years clinical research required</div>\
+                <div>Clinical practice background preferred</div>\
+            </div>\
+        </div>\
+\
+        <div class="job-card">\
+            <div class="job-header">\
+                <div class="job-title">Senior Medical Science Liaison - Pain</div>\
+                <div class="salary">$180K-$250K</div>\
+            </div>\
+            <div class="company">Vertex Pharmaceuticals</div>\
+            <div class="job-details">\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56525  North Central Territory\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u9200  Field-Based\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56507  <span class="remote-badge hybrid">Remote + Field</span>\
+                </div>\
+            </div>\
+            <div class="contact-info">\
+                <strong>Contact:</strong>\
+                <div>vrtx.com/careers</div>\
+                <div>Pain management therapeutic area</div>\
+                <div>Interventional spine expertise valued</div>\
+            </div>\
+        </div>\
+\
+        <!-- CLINICAL RESEARCH ORGANIZATIONS -->\
+        <div class="job-card">\
+            <div class="job-header">\
+                <div class="job-title">Medical Director - Spine Trials <span class="priority">PERFECT FIT</span></div>\
+                <div class="salary">$226K-$387K</div>\
+            </div>\
+            <div class="company">IQVIA</div>\
+            <div class="job-details">\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56525  Remote Flexible\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u9200  Full-Time\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56507  <span class="remote-badge fully-remote">100% Remote</span>\
+                </div>\
+            </div>\
+            <div class="contact-info">\
+                <strong>Contact:</strong>\
+                <div>jobs.iqvia.com</div>\
+                <div>Orthopedic/spine therapeutic expertise</div>\
+                <div>Clinical trial design & oversight</div>\
+            </div>\
+        </div>\
+\
+        <div class="job-card">\
+            <div class="job-header">\
+                <div class="job-title">Principal Medical Director - Spine CRO <span class="priority">SPECIALIZED</span></div>\
+                <div class="salary">Competitive</div>\
+            </div>\
+            <div class="company">SpineMark Corporation</div>\
+            <div class="job-details">\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56525  Remote/Flexible\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u9200  Full-Time\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56507  <span class="remote-badge hybrid">Remote + Site Visits</span>\
+                </div>\
+            </div>\
+            <div class="contact-info">\
+                <strong>Contact:</strong>\
+                <div>spinemark.com careers</div>\
+                <div>Only spine-specialized CRO</div>\
+                <div>50+ completed spine studies</div>\
+            </div>\
+        </div>\
+\
+        <!-- MEDICAL WRITING & EDUCATION -->\
+        <div class="job-card">\
+            <div class="job-header">\
+                <div class="job-title">Clinical Editor - Spine Publications</div>\
+                <div class="salary">$163K-$265K</div>\
+            </div>\
+            <div class="company">Elsevier</div>\
+            <div class="job-details">\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56525  Remote Worldwide\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u9200  Full-Time\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56507  <span class="remote-badge fully-remote">100% Remote</span>\
+                </div>\
+            </div>\
+            <div class="contact-info">\
+                <strong>Contact:</strong>\
+                <div>careers.elsevier.com</div>\
+                <div>Clinical content creation</div>\
+                <div>Spine/orthopedic publications</div>\
+            </div>\
+        </div>\
+\
+        <div class="job-card">\
+            <div class="job-header">\
+                <div class="job-title">Medical Affairs Specialist</div>\
+                <div class="salary">$85K-$95K</div>\
+            </div>\
+            <div class="company">Medscape (WebMD)</div>\
+            <div class="job-details">\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56525  Remote US\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u9200  Full-Time\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56507  <span class="remote-badge fully-remote">100% Remote</span>\
+                </div>\
+            </div>\
+            <div class="contact-info">\
+                <strong>Contact:</strong>\
+                <div>jobs.jobvite.com/webmd</div>\
+                <div>Clinical content development</div>\
+                <div>Entry-level medical writing</div>\
+            </div>\
+        </div>\
+\
+        <!-- HEALTHCARE TECHNOLOGY -->\
+        <div class="job-card">\
+            <div class="job-header">\
+                <div class="job-title">Medical Director - EHR Implementation</div>\
+                <div class="salary">$180K-$280K</div>\
+            </div>\
+            <div class="company">Oracle Health (Cerner)</div>\
+            <div class="job-details">\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56525  Remote/Hybrid\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u9200  Full-Time\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56507  <span class="remote-badge hybrid">Remote + Travel</span>\
+                </div>\
+            </div>\
+            <div class="contact-info">\
+                <strong>Contact:</strong>\
+                <div>oracle.com/corporate/careers</div>\
+                <div>Epic/Cerner implementations</div>\
+                <div>Spine care workflow optimization</div>\
+            </div>\
+        </div>\
+\
+        <div class="job-card">\
+            <div class="job-header">\
+                <div class="job-title">Staff Clinician - Digital MSK</div>\
+                <div class="salary">$80K-$110K</div>\
+            </div>\
+            <div class="company">Teladoc Health</div>\
+            <div class="job-details">\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56525  Remote US\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u9200  Part-Time/Full-Time\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56507  <span class="remote-badge fully-remote">100% Remote</span>\
+                </div>\
+            </div>\
+            <div class="contact-info">\
+                <strong>Contact:</strong>\
+                <div>teladochealth.com/careers</div>\
+                <div>CME credits + malpractice coverage</div>\
+                <div>Performance bonuses available</div>\
+            </div>\
+        </div>\
+\
+        <!-- MEDICAL DEVICE CONSULTING -->\
+        <div class="job-card">\
+            <div class="job-header">\
+                <div class="job-title">Regulatory Affairs Consultant - Spine</div>\
+                <div class="salary">$112K-$329K</div>\
+            </div>\
+            <div class="company">Stryker Regulatory</div>\
+            <div class="job-details">\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56525  Remote US\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u9200  Full-Time\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56507  <span class="remote-badge fully-remote">100% Remote</span>\
+                </div>\
+            </div>\
+            <div class="contact-info">\
+                <strong>Contact:</strong>\
+                <div>careers.stryker.com</div>\
+                <div>Spine division experience preferred</div>\
+                <div>FDA regulatory submissions</div>\
+            </div>\
+        </div>\
+\
+        <div class="job-card">\
+            <div class="job-header">\
+                <div class="job-title">Medical Device Regulatory Consultant <span class="priority">SPINE FOCUSED</span></div>\
+                <div class="salary">Competitive</div>\
+            </div>\
+            <div class="company">MCRA Medical Consulting</div>\
+            <div class="job-details">\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56525  Remote/Flexible\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u9200  Contract/Full-Time\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56507  <span class="remote-badge fully-remote">100% Remote</span>\
+                </div>\
+            </div>\
+            <div class="contact-info">\
+                <strong>Contact:</strong>\
+                <div>mcra.com careers</div>\
+                <div>1st Spine De Novo grant achieved</div>\
+                <div>Led by former CDRH Branch Chief</div>\
+            </div>\
+        </div>\
+\
+        <!-- FREELANCE MEDICAL WRITING -->\
+        <div class="job-card expandable" onclick="toggleExpand(this)">\
+            <div class="job-header">\
+                <div class="job-title">Freelance Medical Writing Network</div>\
+                <div class="salary">$26-$76/hr</div>\
+            </div>\
+            <div class="company">Multiple Platforms</div>\
+            <div class="collapsible">\
+                <div class="job-details">\
+                    <div class="detail-row">\
+                        \uc0\u55357 \u56525  Remote Worldwide\
+                    </div>\
+                    <div class="detail-row">\
+                        \uc0\u9200  Flexible Hours\
+                    </div>\
+                    <div class="detail-row">\
+                        \uc0\u55357 \u56507  <span class="remote-badge fully-remote">100% Remote</span>\
+                    </div>\
+                </div>\
+                <div class="contact-info">\
+                    <strong>Top Platforms:</strong>\
+                    <div>\'95 FlexJobs: flexjobs.com/remote-jobs/medical-writer</div>\
+                    <div>\'95 ZipRecruiter: Medical Writer positions</div>\
+                    <div>\'95 SimplyHired: Medical advisory roles</div>\
+                    <div>\'95 Annual potential: $54K-$158K</div>\
+                </div>\
+            </div>\
+        </div>\
+\
+        <!-- EXISTING SECTIONS CONTINUE -->\
+        \
+        <!-- J&J MSL POSITIONS -->\
+        <div class="job-card">\
+            <div class="job-header">\
+                <div class="job-title">Senior MSL - Neuroimmunology (Carolinas)</div>\
+                <div class="salary">$118K-$236K</div>\
+            </div>\
+            <div class="company">Johnson & Johnson</div>\
+            <div class="job-details">\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56525  Raleigh, NC (Covers NC/SC)\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u9200  Field-Based, 60% Travel\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56507  <span class="remote-badge hybrid">Hybrid Field</span>\
+                </div>\
+            </div>\
+            <div class="deadline">Deadline: May 24, 2025</div>\
+            <div class="contact-info">\
+                <strong>Contact:</strong>\
+                <div>careers.jnj.com Job #R-007239</div>\
+                <div>Base + bonus + company car</div>\
+            </div>\
+        </div>\
+        \
+        <div class="job-card">\
+            <div class="job-header">\
+                <div class="job-title">MSL - Neuroimmunology (Mid-Atlantic)</div>\
+                <div class="salary">$137K-$236K</div>\
+            </div>\
+            <div class="company">Johnson & Johnson</div>\
+            <div class="job-details">\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56525  Washington DC Region\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u9200  Field-Based, 60% Travel\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56507  <span class="remote-badge hybrid">Hybrid Field</span>\
+                </div>\
+            </div>\
+            <div class="deadline">Deadline: May 24, 2025</div>\
+            <div class="contact-info">\
+                <strong>Contact:</strong>\
+                <div>careers.jnj.com Job #R-025239</div>\
+                <div>Company car included</div>\
+            </div>\
+        </div>\
+        \
+        <!-- ACADEMIC POSITIONS -->\
+        <div class="job-card">\
+            <div class="job-header">\
+                <div class="job-title">Interventional Spine Physiatrist</div>\
+                <div class="salary">Competitive</div>\
+            </div>\
+            <div class="company">UNC Chapel Hill</div>\
+            <div class="job-details">\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56525  Chapel Hill, NC\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u9200  Clinical + Teaching/Research\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56507  <span class="remote-badge onsite">On-Site Required</span>\
+                </div>\
+            </div>\
+            <div class="contact-info">\
+                <strong>Contact:</strong>\
+                <div>unc.peopleadmin.com</div>\
+                <div>Posting #255256</div>\
+                <div>PM&R Department</div>\
+            </div>\
+        </div>\
+        \
+        <div class="job-card">\
+            <div class="job-header">\
+                <div class="job-title">Neuromuscular Medicine Physician</div>\
+                <div class="salary">Competitive</div>\
+            </div>\
+            <div class="company">Atrium Health</div>\
+            <div class="job-details">\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56525  Charlotte, NC\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u9200  Clinical Position\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56507  <span class="remote-badge onsite">On-Site Required</span>\
+                </div>\
+            </div>\
+            <div class="contact-info">\
+                <strong>Contact:</strong>\
+                <div>PracticeMatch.com Job #938612</div>\
+                <div>EMG expertise preferred</div>\
+            </div>\
+        </div>\
+        \
+        <!-- MEDICAL DEVICE COMPANIES -->\
+        <div class="job-card">\
+            <div class="job-header">\
+                <div class="job-title">Clinical Specialist</div>\
+                <div class="salary">$90K-$140K+</div>\
+            </div>\
+            <div class="company">Abbott Neuromodulation</div>\
+            <div class="job-details">\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56525  Field Territories\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u9200  Field-Based, OR Time\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56507  <span class="remote-badge hybrid">Travel-Based</span>\
+                </div>\
+            </div>\
+            <div class="contact-info">\
+                <strong>Contact:</strong>\
+                <div>jobs.abbott/us/en/neuromodulation</div>\
+                <div>Neuromodulation focus</div>\
+            </div>\
+        </div>\
+        \
+        <div class="job-card">\
+            <div class="job-header">\
+                <div class="job-title">Clinical Specialist - Spine</div>\
+                <div class="salary">$90K-$212K</div>\
+            </div>\
+            <div class="company">Stryker Corporation</div>\
+            <div class="job-details">\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56525  Multiple Territories\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u9200  Field-Based, Hospital Presence\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56507  <span class="remote-badge hybrid">Travel-Based</span>\
+                </div>\
+            </div>\
+            <div class="contact-info">\
+                <strong>Contact:</strong>\
+                <div>careers.stryker.com talent network</div>\
+                <div>Spine procedural experience preferred</div>\
+            </div>\
+        </div>\
+        \
+        <!-- EXPERT WITNESS -->\
+        <div class="job-card expandable" onclick="toggleExpand(this)">\
+            <div class="job-header">\
+                <div class="job-title">Medical Expert Witness Network</div>\
+                <div class="salary">$200-$400+/hr</div>\
+            </div>\
+            <div class="company">Multiple Platforms</div>\
+            <div class="collapsible">\
+                <div class="job-details">\
+                    <div class="detail-row">\
+                        \uc0\u55357 \u56525  National Cases\
+                    </div>\
+                    <div class="detail-row">\
+                        \uc0\u9200  Case-by-Case Flexible\
+                    </div>\
+                    <div class="detail-row">\
+                        \uc0\u55357 \u56507  <span class="remote-badge hybrid">Remote + Travel</span>\
+                    </div>\
+                </div>\
+                <div class="contact-info">\
+                    <strong>Multiple Options:</strong>\
+                    <div>\'95 SEAK Inc: imenet.com</div>\
+                    <div>\'95 AMFS: amfs.com</div>\
+                    <div>\'95 Expert Institute: expertinstitute.com</div>\
+                    <div>\'95 JurisPro: jurispro.com</div>\
+                    <div>\'95 Texas MLC: txmlc.com</div>\
+                </div>\
+            </div>\
+        </div>\
+        \
+        <!-- CONSULTING -->\
+        <div class="job-card expandable" onclick="toggleExpand(this)">\
+            <div class="job-header">\
+                <div class="job-title">Healthcare Consulting (NC)</div>\
+                <div class="salary">$300-$800/hr</div>\
+            </div>\
+            <div class="company">Multiple Firms</div>\
+            <div class="collapsible">\
+                <div class="job-details">\
+                    <div class="detail-row">\
+                        \uc0\u55357 \u56525  Charlotte & Research Triangle\
+                    </div>\
+                    <div class="detail-row">\
+                        \uc0\u9200  Project-Based\
+                    </div>\
+                    <div class="detail-row">\
+                        \uc0\u55357 \u56507  <span class="remote-badge hybrid">Hybrid + Client Sites</span>\
+                    </div>\
+                </div>\
+                <div class="contact-info">\
+                    <strong>Key NC Firms:</strong>\
+                    <div>\'95 PYA (Charlotte): pyapc.com</div>\
+                    <div>\'95 CREO Consulting (Durham): creoconsulting.com</div>\
+                    <div>\'95 Parexel (Durham): parexel.com</div>\
+                    <div>\'95 Health Value Associates: healthvalueassociates.com</div>\
+                </div>\
+            </div>\
+        </div>\
+        \
+        <!-- HEALTH IT -->\
+        <div class="job-card">\
+            <div class="job-header">\
+                <div class="job-title">Physician Informaticist</div>\
+                <div class="salary">$150K-$300K+</div>\
+            </div>\
+            <div class="company">Epic Systems / Oracle Health</div>\
+            <div class="job-details">\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56525  Madison, WI / Multiple Locations\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u9200  Full-Time\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56507  <span class="remote-badge hybrid">Hybrid Available</span>\
+                </div>\
+            </div>\
+            <div class="contact-info">\
+                <strong>Contact:</strong>\
+                <div>epic.com/careers</div>\
+                <div>oracle.com/corporate/careers</div>\
+                <div>EHR workflow expertise</div>\
+            </div>\
+        </div>\
+        \
+        <!-- MORE IME OPTIONS -->\
+        <div class="job-card">\
+            <div class="job-header">\
+                <div class="job-title">IME Physician Panel</div>\
+                <div class="salary">$2,890/case</div>\
+            </div>\
+            <div class="company">Dane Street LLC</div>\
+            <div class="job-details">\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56525  Nationwide (NC Coverage)\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u9200  Flexible Part-Time\
+                </div>\
+                <div class="detail-row">\
+                    \uc0\u55357 \u56507  <span class="remote-badge hybrid">Remote + In-Person Exams</span>\
+                </div>\
+            </div>\
+            <div class="contact-info">\
+                <strong>Contact:</strong>\
+                <div>marketing@danestreet.com</div>\
+                <div>Flexible scheduling, admin support</div>\
+            </div>\
+        </div>\
+        \
+        <div class="footer">\
+            <h3>\uc0\u55356 \u57263  Updated Priority Action Plan</h3>\
+            <p><strong>Week 1 (IMMEDIATE):</strong> Apply UnitedHealth ($269K-$425K) \'95 CVS Health ($287K-$507K) \'95 Healthcare Shares ($131K-$273K) \'95 Call ExamWorks (206) 200-7171<br>\
+            <strong>Week 2:</strong> Apply Amgen ($261K-$329K) \'95 IQVIA Medical Director \'95 Contact SpineMark CRO \'95 Apply J&J MSL positions<br>\
+            <strong>Week 3:</strong> Elsevier Clinical Editor \'95 Oracle Health \'95 Vertex Pain MSL \'95 Register expert witness platforms<br>\
+            <strong>Week 4:</strong> Apply UNC/Atrium positions \'95 Contact consulting firms \'95 Medical writing platforms</p>\
+            \
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #4a5568;">\
+                <strong>\uc0\u55357 \u56496  Enhanced Compensation Potential:</strong> $400K-$700K+ annually through strategic remote combinations<br>\
+                <strong>\uc0\u55356 \u57286  Your Advantage:</strong> 20 years + interventional spine + EMG expertise = Premium remote positioning<br>\
+                <strong>\uc0\u55357 \u56520  Market Insight:</strong> 60% of opportunities now fully remote \'95 Spine expertise in highest demand \'95 Non-clinical roles 2x clinical salaries\
+            </div>\
+        </div>\
+    </div>\
+\
+    <script>\
+        function toggleExpand(element) \{\
+            const collapsible = element.querySelector('.collapsible');\
+            const expandable = element.querySelector('.expandable');\
+            \
+            if (collapsible.classList.contains('collapsed')) \{\
+                collapsible.classList.remove('collapsed');\
+                expandable.classList.remove('collapsed');\
+                collapsible.style.maxHeight = collapsible.scrollHeight + 'px';\
+            \} else \{\
+                collapsible.classList.add('collapsed');\
+                expandable.classList.add('collapsed');\
+                collapsible.style.maxHeight = '0px';\
+            \}\
+        \}\
+        \
+        // Initialize collapsed state for expandable items\
+        document.addEventListener('DOMContentLoaded', function() \{\
+            const expandables = document.querySelectorAll('.expandable');\
+            expandables.forEach(element => \{\
+                const collapsible = element.querySelector('.collapsible');\
+                collapsible.classList.add('collapsed');\
+                element.classList.add('collapsed');\
+                collapsible.style.maxHeight = '0px';\
+            \});\
+        \});\
+    </script>\
+</body>\
+</html>}
