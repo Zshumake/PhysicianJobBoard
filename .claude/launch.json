@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "jobboard",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "-l", "8766"],
+      "port": 8766,
+      "autoPort": true
+    }
+  ]
+}
