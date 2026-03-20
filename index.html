@@ -4,8 +4,17 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Bobby's Personal Job Board</title>
+
+    <!-- PWA & Mobile App Meta Tags -->
+    <meta name="theme-color" content="#3d0000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Job Board">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="Gryffindor-Logo.png">
 
     <!-- Firebase SDK -->
     <!-- Google Fonts -->
@@ -524,15 +533,76 @@
         /* FOCUS */
         :focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }
 
+        /* ═══════════════════════════════════════════════════
+           PWA & MOBILE-FIRST ENHANCEMENTS
+           ═══════════════════════════════════════════════════ */
+        html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+        body { overscroll-behavior-y: contain; }
+        a, button, .expandable, .interest-btn, .apply-link, .btn-action { -webkit-tap-highlight-color: transparent; }
+
+        @media (display-mode: standalone) {
+            body {
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+                padding-left: env(safe-area-inset-left);
+                padding-right: env(safe-area-inset-right);
+            }
+        }
+
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: calc(var(--space-6) + env(safe-area-inset-bottom, 0px));
+            right: var(--space-4);
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            background: var(--color-crimson);
+            color: var(--color-gold);
+            border: 2px solid var(--color-gold);
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            font-size: var(--text-xl);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 500;
+            opacity: 0; transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .back-to-top.visible { opacity: 1; transform: translateY(0); }
+        .back-to-top:active { transform: scale(0.92); }
+
+        /* Offline Banner */
+        .offline-banner {
+            position: fixed; top: 0; left: 0; right: 0;
+            background: #fff3cd; color: #856404;
+            text-align: center;
+            padding: var(--space-2) var(--space-4);
+            font-size: var(--text-sm); font-weight: 600;
+            z-index: 9999;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+        }
+        .offline-banner.show { transform: translateY(0); }
+
         /* RESPONSIVE */
         @media (max-width: 768px) {
-            .stats { grid-template-columns: repeat(2, 1fr); }
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+                position: sticky; top: 0; z-index: 100;
+                background: var(--color-parchment-dark);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
             .header h1 { font-size: var(--text-2xl); }
             .gryffindor-crest { width: 100px !important; height: 100px !important; }
             .update-log { margin: var(--space-3); }
             .job-card { margin: var(--space-2) var(--space-3); padding: var(--space-4); }
             .new-section::before, .new-section::after { width: 10%; }
             .dumbledore-quote { font-size: var(--text-base); }
+
+            /* 44px minimum touch targets */
+            .interest-btn { min-height: 44px; padding: var(--space-3) var(--space-4); font-size: var(--text-base); }
+            .apply-link { min-height: 44px; display: inline-flex; align-items: center; padding: var(--space-3) var(--space-5); }
+            .btn-action { min-height: 44px; padding: var(--space-2) var(--space-4); }
         }
         @media (max-width: 480px) {
             body { padding: var(--space-2); }
@@ -541,10 +611,15 @@
             .salary { margin-top: var(--space-1); }
             .job-details { flex-direction: column; gap: var(--space-2); }
             .interest-buttons { flex-direction: column; }
+            .interest-btn { width: 100%; justify-content: center; }
             .header { padding: var(--space-6) var(--space-4); }
             .header h1 { font-size: var(--text-xl); }
             .new-section { font-size: var(--text-base); padding: var(--space-6) var(--space-3); }
             .new-section::before, .new-section::after { display: none; }
+
+            /* Full-width apply buttons on small screens */
+            .apply-link { width: 100%; text-align: center; justify-content: center; }
+            .job-card { margin: var(--space-2); border-radius: var(--radius-md); }
         }
         @media (min-width: 1024px) {
             .header h1 { font-size: var(--text-4xl); }
@@ -648,7 +723,7 @@
         <div class="header">
             <div class="gryffindor-crest"></div>
             <h1>Bobby's Personal Job Board</h1>
-            <p>Remote Opportunities for Experienced Physicians • Updated March 17, 2026</p>
+            <p>Remote Opportunities for Experienced Physicians • Updated March 20, 2026</p>
             <div class="dumbledore-quote">
                 "It is our choices, Harry, that show what we truly are, far more than our abilities." - Albus Dumbledore
             </div>
@@ -674,12 +749,12 @@
         </div>
 
         <div class="update-log">
-            <h3><span class="icon icon-calendar" aria-hidden="true"></span> Weekly Update Log - March 18, 2026</h3>
+            <h3><span class="icon icon-calendar" aria-hidden="true"></span> Weekly Update Log - March 20, 2026</h3>
             <ul>
-                <li class="added">Added 8 new positions: disability insurance, medical device, digital health, peer review, life insurance, VA, hospital advisor, specialty pharma</li>
-                <li class="added">New categories: Disability Insurance MD, Medical Device (Spine/Neuromod), Digital Health Startups, Life Insurance/Reinsurance, VA Disability Reviews</li>
-                <li class="added">Previous: 7 pharmaceutical/drug industry MD roles (non-sales)</li>
-                <li class="updated">Updated job categorizer, CSS fixes, and market insights</li>
+                <li class="added">Added 10 fresh, verified job opportunities across multiple categories</li>
+                <li class="updated">Removed 22 expired or unverifiable positions from previous updates</li>
+                <li class="updated">Deep audit of all listings: confirmed 29 evergreen/active positions remain</li>
+                <li class="updated">Updated dates, job counts, and board maintenance</li>
             </ul>
         </div>
 
@@ -695,203 +770,6 @@
         <!-- HIGH PRIORITY REMOTE POSITIONS -->
         <div class="new-section">
             <span class="icon icon--lg icon-target" aria-hidden="true"></span> TOP REMOTE LOW-STRESS OPPORTUNITIES
-        </div>
-
-        <div class="job-card">
-            <div class="job-header">
-                <div class="job-title">Medical Director, Digital Care <span class="job-status new">NEW</span></div>
-                <div class="salary">$275K - $350K</div>
-            </div>
-            <div class="company">Maximus Health</div>
-            <div class="job-details">
-                <div class="detail-row"><span class="icon icon-pin" aria-hidden="true"></span> Remote (US)</div>
-                <div class="detail-row"><span class="icon icon-clock" aria-hidden="true"></span> Full-time</div>
-                <div class="detail-row"><span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">100% Remote</span></div>
-            </div>
-
-            <div class="job-description">
-                <h4><span class="icon icon-target" aria-hidden="true"></span> Role Overview</h4>
-                <p>Lead clinical strategy and oversight for digital care programs. Supervise providers, manage clinical
-                    escalations, and drive quality assurance.</p>
-
-                <h4><span class="icon icon-money" aria-hidden="true"></span> Compensation & Benefits</h4>
-                <ul>
-                    <li>$275,000 - $350,000 Annual Salary</li>
-                    <li>Performance-based Incentives</li>
-                    <li>Comprehensive Executive Benefits</li>
-                </ul>
-
-                <h4><span class="icon icon-clipboard" aria-hidden="true"></span> Key Responsibilities</h4>
-                <ul>
-                    <li>Oversee clinical quality and safety</li>
-                    <li>Manage remote clinical team</li>
-                    <li>Develop digital care protocols</li>
-                </ul>
-
-                <div class="benefits-highlight">
-                    <strong><span class="icon icon-sparkle" aria-hidden="true"></span> Perfect for:</strong> High-level leadership role with excellent compensation and no
-                    direct patient care.
-                </div>
-            </div>
-
-            <div class="requirements">
-                <h4>Required Qualifications:</h4>
-                <ul>
-                    <li>MD/DO with active unrestricted license</li>
-                    <li>Board Certification</li>
-                    <li>5+ years clinical experience + Telehealth experience</li>
-                </ul>
-            </div>
-
-            <div class="contact-info">
-                <strong>Contact Information:</strong>
-                <div>Apply via Maximus Careers</div>
-            </div>
-
-            <a href="https://maximus.com/careers" target="_blank" class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Apply Now</a>
-            <a href="https://maximus.com/" target="_blank" class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> More Info</a>
-
-            <div class="interest-buttons">
-                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')"
-                    data-job-id="maximus-001">
-                    <span class="icon icon-star" aria-hidden="true"></span> Interested
-                </button>
-                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')"
-                    data-job-id="maximus-001">
-                    <span class="icon icon-x" aria-hidden="true"></span> Not Interested
-                </button>
-            </div>
-        </div>
-
-        <div class="job-card">
-            <div class="job-header">
-                <div class="job-title">Associate Medical Director <span class="job-status new">NEW</span></div>
-                <div class="salary">$212K - $354K</div>
-            </div>
-            <div class="company">MDLive (The Cigna Group)</div>
-            <div class="job-details">
-                <div class="detail-row"><span class="icon icon-pin" aria-hidden="true"></span> Remote</div>
-                <div class="detail-row"><span class="icon icon-clock" aria-hidden="true"></span> Full-time</div>
-                <div class="detail-row"><span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">100% Remote</span></div>
-            </div>
-
-            <div class="job-description">
-                <h4><span class="icon icon-target" aria-hidden="true"></span> Role Overview</h4>
-                <p>Provide clinical care and administrative leadership. Support quality, safety, and operational
-                    decisions for the virtual medical team.</p>
-
-                <h4><span class="icon icon-money" aria-hidden="true"></span> Compensation & Benefits</h4>
-                <ul>
-                    <li>$212,600 - $354,300 Salary Range</li>
-                    <li>Bonus Potential</li>
-                    <li>Cigna Group Benefits Package</li>
-                </ul>
-
-                <h4><span class="icon icon-clipboard" aria-hidden="true"></span> Key Responsibilities</h4>
-                <ul>
-                    <li>Clinical oversight of virtual care</li>
-                    <li>Participate in quality committees</li>
-                    <li>Support provider network management</li>
-                </ul>
-
-                <div class="benefits-highlight">
-                    <strong><span class="icon icon-sparkle" aria-hidden="true"></span> Perfect for:</strong> Blending clinical expertise with administrative leadership in a top
-                    telehealth company.
-                </div>
-            </div>
-
-            <div class="requirements">
-                <h4>Required Qualifications:</h4>
-                <ul>
-                    <li>MD/DO Board Certified</li>
-                    <li>Active Medical License</li>
-                    <li>Telemedicine experience preferred</li>
-                </ul>
-            </div>
-
-            <div class="contact-info">
-                <strong>Contact Information:</strong>
-                <div>Apply via Cigna/MDLive Careers</div>
-            </div>
-
-            <a href="https://jobs.thecignagroup.com/" target="_blank" class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Apply Now</a>
-            <a href="https://www.mdlive.com/" target="_blank" class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> More Info</a>
-
-            <div class="interest-buttons">
-                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')"
-                    data-job-id="mdlive-001">
-                    <span class="icon icon-star" aria-hidden="true"></span> Interested
-                </button>
-                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')"
-                    data-job-id="mdlive-001">
-                    <span class="icon icon-x" aria-hidden="true"></span> Not Interested
-                </button>
-            </div>
-        </div>
-
-        <div class="job-card">
-            <div class="job-header">
-                <div class="job-title">Medical Director, Medical Policy <span class="job-status new">NEW</span></div>
-                <div class="salary">$174K - $374K</div>
-            </div>
-            <div class="company">CVS Health</div>
-            <div class="job-details">
-                <div class="detail-row"><span class="icon icon-pin" aria-hidden="true"></span> Remote (US)</div>
-                <div class="detail-row"><span class="icon icon-clock" aria-hidden="true"></span> Full-time</div>
-                <div class="detail-row"><span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">100% Remote</span></div>
-            </div>
-
-            <div class="job-description">
-                <h4><span class="icon icon-target" aria-hidden="true"></span> Role Overview</h4>
-                <p>Provide clinical expertise for medical management programs. Focus on clinical and payment policy
-                    development and implementation.</p>
-
-                <h4><span class="icon icon-money" aria-hidden="true"></span> Compensation & Benefits</h4>
-                <ul>
-                    <li>Broad Range: $174,070 - $374,920</li>
-                    <li>Stock Purchase Plan</li>
-                    <li>Comprehensive Health & Wellness</li>
-                </ul>
-
-                <h4><span class="icon icon-clipboard" aria-hidden="true"></span> Key Responsibilities</h4>
-                <ul>
-                    <li>Develop and review medical policies</li>
-                    <li>Support utilization management teams</li>
-                    <li>Ensure clinical accuracy of policies</li>
-                </ul>
-
-                <div class="benefits-highlight">
-                    <strong><span class="icon icon-sparkle" aria-hidden="true"></span> Perfect for:</strong> Policy-oriented physician interested in population health impact.
-                </div>
-            </div>
-
-            <div class="requirements">
-                <h4>Required Qualifications:</h4>
-                <ul>
-                    <li>MD/DO with 5+ years experience</li>
-                    <li>Active, unrestricted license</li>
-                    <li>Managed care experience preferred</li>
-                </ul>
-            </div>
-
-            <div class="contact-info">
-                <strong>Contact Information:</strong>
-                <div>Apply via CVS Health Jobs</div>
-            </div>
-
-            <a href="https://jobs.cvshealth.com/" target="_blank" class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Apply Now</a>
-            <a href="https://jobs.cvshealth.com/" target="_blank" class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> More Info</a>
-
-            <div class="interest-buttons">
-                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')"
-                    data-job-id="cvs-policy-001">
-                    <span class="icon icon-star" aria-hidden="true"></span> Interested
-                </button>
-                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')"
-                    data-job-id="cvs-policy-001">
-                    <span class="icon icon-x" aria-hidden="true"></span> Not Interested
-                </button>
-            </div>
         </div>
 
         <div class="job-card">
@@ -956,137 +834,6 @@
                 </button>
                 <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')"
                     data-job-id="ur-gen-001">
-                    <span class="icon icon-x" aria-hidden="true"></span> Not Interested
-                </button>
-            </div>
-        </div>
-
-        <div class="job-card">
-            <div class="job-header">
-                <div class="job-title">Medical Director, Inpatient Clinical Review <span
-                        class="job-status new">NEW</span></div>
-                <div class="salary">$220K - $310K + Bonus</div>
-            </div>
-            <div class="company">UnitedHealth Group / Optum</div>
-            <div class="job-details">
-                <div class="detail-row"><span class="icon icon-pin" aria-hidden="true"></span> Remote (Nationwide)</div>
-                <div class="detail-row"><span class="icon icon-clock" aria-hidden="true"></span> Full-time</div>
-                <div class="detail-row"><span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">100% Remote</span></div>
-            </div>
-
-            <div class="job-description">
-                <h4><span class="icon icon-target" aria-hidden="true"></span> Role Overview</h4>
-                <p>Provide medical interpretation and decisions about the medical necessity of services for inpatient
-                    stays. Conduct peer-to-peer reviews and collaborate with care management teams.</p>
-
-                <h4><span class="icon icon-money" aria-hidden="true"></span> Compensation & Benefits</h4>
-                <ul>
-                    <li>$220,000 - $310,000 Base Salary</li>
-                    <li>Performance-based Bonus</li>
-                    <li>Comprehensive benefits (401k, Health, PTO)</li>
-                </ul>
-
-                <h4><span class="icon icon-clipboard" aria-hidden="true"></span> Key Responsibilities</h4>
-                <ul>
-                    <li>Conduct clinical review of inpatient cases</li>
-                    <li>Collaborate with utilization management staff</li>
-                    <li>Participate in peer-to-peer discussions</li>
-                </ul>
-
-                <div class="benefits-highlight">
-                    <strong><span class="icon icon-sparkle" aria-hidden="true"></span> Perfect for:</strong> Experienced physician seeking non-clinical leadership role with
-                    top-tier compensation.
-                </div>
-            </div>
-
-            <div class="requirements">
-                <h4>Required Qualifications:</h4>
-                <ul>
-                    <li>MD or DO with active unrestricted license</li>
-                    <li>Board Certification in ABMS specialty (Internal Medicine/Family Medicine preferred)</li>
-                    <li>5+ years clinical experience</li>
-                </ul>
-            </div>
-
-            <div class="contact-info">
-                <strong>Contact Information:</strong>
-                <div>Apply via UnitedHealth Group Careers</div>
-            </div>
-
-            <a href="https://careers.unitedhealthgroup.com/" target="_blank" class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Apply Now</a>
-            <a href="https://www.unitedhealthgroup.com/" target="_blank" class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> More Info</a>
-
-            <div class="interest-buttons">
-                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')" data-job-id="uhg-001">
-                    <span class="icon icon-star" aria-hidden="true"></span> Interested
-                </button>
-                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')"
-                    data-job-id="uhg-001">
-                    <span class="icon icon-x" aria-hidden="true"></span> Not Interested
-                </button>
-            </div>
-        </div>
-
-        <div class="job-card">
-            <div class="job-header">
-                <div class="job-title">Medical Director, Medicare Appeals <span class="job-status new">NEW</span></div>
-                <div class="salary">$200K - $350K</div>
-            </div>
-            <div class="company">CVS Health / Aetna</div>
-            <div class="job-details">
-                <div class="detail-row"><span class="icon icon-pin" aria-hidden="true"></span> Remote (US)</div>
-                <div class="detail-row"><span class="icon icon-clock" aria-hidden="true"></span> Full-time</div>
-                <div class="detail-row"><span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">100% Remote</span></div>
-            </div>
-
-            <div class="job-description">
-                <h4><span class="icon icon-target" aria-hidden="true"></span> Role Overview</h4>
-                <p>Oversee medical necessity appeals for Medicare Advantage plans. Apply clinical judgment to case
-                    reviews and ensure compliance with CMS regulations.</p>
-
-                <h4><span class="icon icon-money" aria-hidden="true"></span> Compensation & Benefits</h4>
-                <ul>
-                    <li>Competitive Salary ($200k-$350k range)</li>
-                    <li>Stock Purchase Plan</li>
-                    <li>CVS Health Discount</li>
-                </ul>
-
-                <h4><span class="icon icon-clipboard" aria-hidden="true"></span> Key Responsibilities</h4>
-                <ul>
-                    <li>Review Medicare appeals for medical necessity</li>
-                    <li>Provide clinical expertise for coverage determinations</li>
-                    <li>Support quality improvement initiatives</li>
-                </ul>
-
-                <div class="benefits-highlight">
-                    <strong><span class="icon icon-sparkle" aria-hidden="true"></span> Perfect for:</strong> Detail-oriented physician looking for low-stress,
-                    regulatory-focused work.
-                </div>
-            </div>
-
-            <div class="requirements">
-                <h4>Required Qualifications:</h4>
-                <ul>
-                    <li>Active Medical License</li>
-                    <li>Board Certification required</li>
-                    <li>Experience with Medicare regulations preferred</li>
-                </ul>
-            </div>
-
-            <div class="contact-info">
-                <strong>Contact Information:</strong>
-                <div>Apply via CVS Health Jobs</div>
-            </div>
-
-            <a href="https://jobs.cvshealth.com/" target="_blank" class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Apply Now</a>
-            <a href="https://jobs.cvshealth.com/" target="_blank" class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> More Info</a>
-
-            <div class="interest-buttons">
-                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')" data-job-id="cvs-001">
-                    <span class="icon icon-star" aria-hidden="true"></span> Interested
-                </button>
-                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')"
-                    data-job-id="cvs-001">
                     <span class="icon icon-x" aria-hidden="true"></span> Not Interested
                 </button>
             </div>
@@ -1288,88 +1035,6 @@
 
         <div class="job-card">
             <div class="job-header">
-                <div class="job-title">Part-Time Medical Director <span class="priority">IDEAL FIT</span><span
-                        class="job-status hot">URGENT</span></div>
-                <div class="salary">$70K/year</div>
-            </div>
-            <div class="company">CHS Recruiting</div>
-            <div class="job-details">
-                <div class="detail-row">
-                    <span class="icon icon-pin" aria-hidden="true"></span> Remote Position (US-based)
-                </div>
-                <div class="detail-row">
-                    <span class="icon icon-clock" aria-hidden="true"></span> 10-15 Hours/Week (Flexible Schedule)
-                </div>
-                <div class="detail-row">
-                    <span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">100% Remote</span>
-                </div>
-            </div>
-
-            <div class="job-description">
-                <h4><span class="icon icon-target" aria-hidden="true"></span> Role Overview</h4>
-                <p>Seeking a part-time Medical Director to provide clinical oversight and medical expertise for workers'
-                    compensation and disability claims. This low-stress position offers exceptional work-life balance
-                    with competitive compensation for minimal time commitment.</p>
-
-                <h4><span class="icon icon-clipboard" aria-hidden="true"></span> Key Responsibilities</h4>
-                <ul>
-                    <li>Review approximately 200 medical claims monthly (50 claims per week)</li>
-                    <li>Provide medical opinions on treatment necessity and appropriateness</li>
-                    <li>Participate in weekly team calls (1-2 hours)</li>
-                    <li>Collaborate with claims adjusters and case managers</li>
-                    <li>Ensure compliance with medical review standards</li>
-                </ul>
-
-                <h4><span class="icon icon-star" aria-hidden="true"></span> Perfect For</h4>
-                <ul>
-                    <li>Experienced physicians seeking reduced clinical burden</li>
-                    <li>Doctors interested in insurance/disability medicine</li>
-                    <li>Those wanting flexible, remote work arrangements</li>
-                    <li>Physicians with strong analytical and documentation skills</li>
-                </ul>
-
-                <div class="benefits-highlight">
-                    <strong><span class="icon icon-money" aria-hidden="true"></span> Benefits:</strong> $70K annual salary for 10-15 hrs/week • Flexible scheduling • No
-                    on-call requirements • Professional development opportunities
-                </div>
-            </div>
-
-            <div class="requirements">
-                <h4>Required Qualifications:</h4>
-                <ul>
-                    <li>Board certification in any medical specialty</li>
-                    <li>Active, unrestricted medical license</li>
-                    <li>Minimum 5 years clinical experience</li>
-                    <li>Strong written communication skills</li>
-                    <li>Computer proficiency and reliable internet</li>
-                </ul>
-            </div>
-
-            <div class="contact-info">
-                <strong>Contact Information:</strong>
-                <div>Jenn Kunkel, Recruiter: (773) 998-1272</div>
-                <div>Email: jenn@chsrecruiting.com</div>
-                <div>Response Time: Typically within 24-48 hours</div>
-            </div>
-
-            <a href="mailto:jenn@chsrecruiting.com?subject=Medical Director Position - Interested Candidate&body=Hello Jenn,%0A%0AI am interested in the Part-Time Medical Director position. I am a board-certified physician with [X] years of experience and am seeking a flexible, remote opportunity.%0A%0APlease let me know the next steps in the application process.%0A%0AThank you,%0A[Your Name]%0A[Your Phone]"
-                class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Contact Jenn Now</a>
-            <a href="tel:+17739981272" class="apply-link"><span class="icon icon-mail" aria-hidden="true"></span> Call Direct</a>
-
-            <div class="interest-buttons">
-                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')"
-                    data-job-id="chs-medical-director">
-                    <span class="icon icon-star" aria-hidden="true"></span> Interested
-                </button>
-                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')"
-                    data-job-id="chs-medical-director">
-                    <span class="icon icon-x" aria-hidden="true"></span> Not Interested
-                </button>
-            </div>
-        </div>
-
-        <div class="job-card">
-            <div class="job-header">
                 <div class="job-title">Independent Medical Examiner <span class="priority">HIGH PAY</span></div>
                 <div class="salary">$441/hr + $955 no-show</div>
             </div>
@@ -1461,84 +1126,6 @@
         </div>
 
         <!-- NEW OPPORTUNITIES THIS WEEK -->
-        <div class="job-card">
-            <div class="job-header">
-                <div class="job-title">Medical Director - Denials Management</div>
-                <div class="salary">$225K+ (40hr/week)</div>
-            </div>
-            <div class="company">CorroHealth (via Indeed)</div>
-            <div class="job-details">
-                <div class="detail-row">
-                    <span class="icon icon-pin" aria-hidden="true"></span> Remote Nationwide
-                </div>
-                <div class="detail-row">
-                    <span class="icon icon-clock" aria-hidden="true"></span> Standard 40-hour workweek
-                </div>
-                <div class="detail-row">
-                    <span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">100% Remote</span>
-                </div>
-            </div>
-
-            <div class="job-description">
-                <h4><span class="icon icon-target" aria-hidden="true"></span> Role Overview</h4>
-                <p>Evaluate hospitalizations across the country while utilizing your medical knowledge and gaining
-                    experience as an expert advisor to client hospitals. Provides desired work/life balance while
-                    expanding your knowledge base in Utilization Review.</p>
-
-                <h4><span class="icon icon-money" aria-hidden="true"></span> Competitive Package</h4>
-                <ul>
-                    <li>Base salary around $225K+ with uncapped bonus potential</li>
-                    <li>Standard 40-hour workweek with predictable schedule</li>
-                    <li>Comprehensive benefits package</li>
-                    <li>Professional development opportunities</li>
-                </ul>
-
-                <h4><span class="icon icon-clipboard" aria-hidden="true"></span> Key Responsibilities</h4>
-                <ul>
-                    <li>Perform clinical case reviews for hospital denials</li>
-                    <li>Provide recommendations for appropriate admission status</li>
-                    <li>Collaborate with hospital staff and insurance reviewers</li>
-                    <li>Drive value to hospitals through expert medical guidance</li>
-                </ul>
-
-                <div class="benefits-highlight">
-                    <strong><span class="icon icon-sparkle" aria-hidden="true"></span> Perfect for:</strong> Experienced physicians seeking predictable schedule • No
-                    nights/weekends • Use clinical knowledge in advisory role • Competitive bonus structure
-                </div>
-            </div>
-
-            <div class="requirements">
-                <h4>Required Qualifications:</h4>
-                <ul>
-                    <li>Board certification in Internal Medicine, Family Medicine, or related specialty</li>
-                    <li>Minimum 5 years of clinical experience</li>
-                    <li>Understanding of hospital utilization review processes preferred</li>
-                    <li>Strong communication and analytical skills</li>
-                </ul>
-            </div>
-
-            <div class="contact-info">
-                <strong>Apply Through:</strong>
-                <div>Indeed.com - Search "CorroHealth Medical Director"</div>
-                <div>Recently posted position with immediate need</div>
-            </div>
-
-            <a href="https://www.indeed.com/q-corrohealth-medical-director-jobs.html" target="_blank"
-                class="apply-link primary"><span class="icon icon-search" aria-hidden="true"></span> Find on Indeed</a>
-            <a href="https://corrohealth.com/careers" target="_blank" class="apply-link"><span class="icon icon-shield" aria-hidden="true"></span> Company Site</a>
-
-            <div class="interest-buttons">
-                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')"
-                    data-job-id="corrohealth-medical-director">
-                    <span class="icon icon-star" aria-hidden="true"></span> Interested
-                </button>
-                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')"
-                    data-job-id="corrohealth-medical-director">
-                    <span class="icon icon-x" aria-hidden="true"></span> Not Interested
-                </button>
-            </div>
-        </div>
-
         <div class="job-card">
             <div class="job-header">
                 <div class="job-title">Remote Physician Reviewer - Utilization Management</div>
@@ -1771,229 +1358,6 @@
 
         <div class="job-card">
             <div class="job-header">
-                <div class="job-title">National Medical Director <span class="priority">EXECUTIVE LEVEL</span></div>
-                <div class="salary">$287K-$507K</div>
-            </div>
-            <div class="company">CVS Health/Aetna</div>
-            <div class="job-details">
-                <div class="detail-row">
-                    <span class="icon icon-pin" aria-hidden="true"></span> Remote Nationwide
-                </div>
-                <div class="detail-row">
-                    <span class="icon icon-clock" aria-hidden="true"></span> Executive Schedule
-                </div>
-                <div class="detail-row">
-                    <span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">100% Remote</span>
-                </div>
-            </div>
-            <div class="requirements">
-                <h4>Executive Requirements:</h4>
-                <ul>
-                    <li>Advanced degree (MD required)</li>
-                    <li>15+ years clinical experience</li>
-                    <li>Leadership/management experience</li>
-                    <li>Healthcare policy development background</li>
-                </ul>
-            </div>
-            <div class="contact-info">
-                <strong>Apply:</strong>
-                <div>jobs.cvshealth.com</div>
-                <div>Clinical policy development & coverage decisions</div>
-                <div>Strategic leadership role with significant autonomy</div>
-            </div>
-            <a href="https://jobs.cvshealth.com" target="_blank" class="apply-link">Explore Positions</a>
-        </div>
-
-        <!-- TELEHEALTH & DIGITAL HEALTH -->
-        <div class="new-section">
-            <span class="icon icon--lg icon-globe" aria-hidden="true"></span> TELEHEALTH & DIGITAL HEALTH - LOW STRESS, HIGH FLEXIBILITY
-        </div>
-
-        <div class="job-card">
-            <div class="job-header">
-                <div class="job-title">Remote MSK Specialist <span class="priority">PERFECT FIT</span></div>
-                <div class="salary">$95-$150/hr</div>
-            </div>
-            <div class="company">Teladoc Health - MSK Division</div>
-            <div class="job-details">
-                <div class="detail-row">
-                    <span class="icon icon-pin" aria-hidden="true"></span> Remote US
-                </div>
-                <div class="detail-row">
-                    <span class="icon icon-clock" aria-hidden="true"></span> Part-Time/Full-Time Options
-                </div>
-                <div class="detail-row">
-                    <span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">100% Remote</span>
-                </div>
-            </div>
-            <div class="requirements">
-                <h4>Ideal Background:</h4>
-                <ul>
-                    <li>PM&R or similar specialty certification</li>
-                    <li>Experience with spine conditions</li>
-                    <li>Comfortable with virtual consultations</li>
-                    <li>EMR proficiency (Epic preferred)</li>
-                </ul>
-            </div>
-            <div class="contact-info">
-                <strong>Apply:</strong>
-                <div>teladochealth.com/careers</div>
-                <div>Search: "MSK" or "Musculoskeletal"</div>
-                <div>Benefits: CME credits, malpractice coverage, performance bonuses</div>
-            </div>
-            <a href="https://teladochealth.com/careers" target="_blank" class="apply-link">Apply Online</a>
-        </div>
-
-        <div class="job-card">
-            <div class="job-header">
-                <div class="job-title">Senior Spine Telehealth Consultant</div>
-                <div class="salary">$120-$180/hr</div>
-            </div>
-            <div class="company">Ro Health (formerly Roman)</div>
-            <div class="job-details">
-                <div class="detail-row">
-                    <span class="icon icon-pin" aria-hidden="true"></span> Remote Nationwide
-                </div>
-                <div class="detail-row">
-                    <span class="icon icon-clock" aria-hidden="true"></span> Flexible Hours (10-40hrs/week)
-                </div>
-                <div class="detail-row">
-                    <span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">100% Remote</span>
-                </div>
-            </div>
-            <div class="requirements">
-                <h4>Requirements:</h4>
-                <ul>
-                    <li>Board certification in relevant specialty</li>
-                    <li>Spine/MSK treatment experience</li>
-                    <li>Telehealth platform comfort</li>
-                    <li>Patient-focused communication style</li>
-                </ul>
-            </div>
-            <div class="contact-info">
-                <strong>Apply:</strong>
-                <div>ro.co/careers</div>
-                <div>Modern platform, streamlined workflows</div>
-                <div>Focus: spine pain management and conservative treatment</div>
-            </div>
-            <a href="https://ro.co/careers" target="_blank" class="apply-link">View Openings</a>
-        </div>
-
-        <!-- PHARMACEUTICAL & BIOTECH -->
-        <div class="job-card">
-            <div class="job-header">
-                <div class="job-title">Medical Science Liaison - Spine & Pain</div>
-                <div class="salary">$180K-$250K + Bonus</div>
-            </div>
-            <div class="company">Vertex Pharmaceuticals</div>
-            <div class="job-details">
-                <div class="detail-row">
-                    <span class="icon icon-pin" aria-hidden="true"></span> Remote with Regional Territory
-                </div>
-                <div class="detail-row">
-                    <span class="icon icon-clock" aria-hidden="true"></span> Field-Based (Flexible Schedule)
-                </div>
-                <div class="detail-row">
-                    <span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge hybrid">Remote + Minimal Travel</span>
-                </div>
-            </div>
-            <div class="requirements">
-                <h4>Ideal Candidate:</h4>
-                <ul>
-                    <li>Advanced degree (MD, PharmD, PhD)</li>
-                    <li>Pain management clinical background</li>
-                    <li>Strong scientific communication skills</li>
-                    <li>KOL relationship experience preferred</li>
-                </ul>
-            </div>
-            <div class="contact-info">
-                <strong>Apply:</strong>
-                <div>vrtx.com/careers</div>
-                <div>Search: "Medical Science Liaison"</div>
-                <div>Interventional spine expertise highly valued</div>
-            </div>
-            <a href="https://vrtx.com/careers" target="_blank" class="apply-link">Apply Now</a>
-        </div>
-
-        <!-- CLINICAL RESEARCH -->
-        <div class="job-card">
-            <div class="job-header">
-                <div class="job-title">Medical Director - Spine Clinical Trials <span
-                        class="priority">SPECIALIZED</span></div>
-                <div class="salary">$226K-$387K</div>
-            </div>
-            <div class="company">IQVIA</div>
-            <div class="job-details">
-                <div class="detail-row">
-                    <span class="icon icon-pin" aria-hidden="true"></span> Remote Flexible
-                </div>
-                <div class="detail-row">
-                    <span class="icon icon-clock" aria-hidden="true"></span> Standard Business Hours
-                </div>
-                <div class="detail-row">
-                    <span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">100% Remote</span>
-                </div>
-            </div>
-            <div class="requirements">
-                <h4>Perfect Background:</h4>
-                <ul>
-                    <li>Orthopedic or PM&R specialty</li>
-                    <li>Clinical trial experience preferred</li>
-                    <li>Spine device/procedure familiarity</li>
-                    <li>Regulatory knowledge helpful</li>
-                </ul>
-            </div>
-            <div class="contact-info">
-                <strong>Apply:</strong>
-                <div>jobs.iqvia.com</div>
-                <div>Search: "Medical Director" + "Spine"</div>
-                <div>Leading CRO with extensive spine trial portfolio</div>
-            </div>
-            <a href="https://jobs.iqvia.com" target="_blank" class="apply-link">Search Jobs</a>
-        </div>
-
-        <!-- MEDICAL WRITING & EDUCATION -->
-        <div class="new-section">
-            <span class="icon icon--lg icon-pen" aria-hidden="true"></span> MEDICAL WRITING & EDUCATION - INTELLECTUAL, LOW STRESS
-        </div>
-
-        <div class="job-card">
-            <div class="job-header">
-                <div class="job-title">Senior Medical Writer - Orthopedics</div>
-                <div class="salary">$163K-$265K</div>
-            </div>
-            <div class="company">Elsevier</div>
-            <div class="job-details">
-                <div class="detail-row">
-                    <span class="icon icon-pin" aria-hidden="true"></span> Remote Worldwide
-                </div>
-                <div class="detail-row">
-                    <span class="icon icon-clock" aria-hidden="true"></span> Standard Business Hours
-                </div>
-                <div class="detail-row">
-                    <span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">100% Remote</span>
-                </div>
-            </div>
-            <div class="requirements">
-                <h4>Requirements:</h4>
-                <ul>
-                    <li>Medical degree with clinical experience</li>
-                    <li>Strong scientific writing skills</li>
-                    <li>Orthopedic/spine knowledge preferred</li>
-                    <li>Publication experience helpful</li>
-                </ul>
-            </div>
-            <div class="contact-info">
-                <strong>Apply:</strong>
-                <div>careers.elsevier.com</div>
-                <div>Clinical content creation for medical publications</div>
-                <div>Flexible, intellectual work environment</div>
-            </div>
-            <a href="https://careers.elsevier.com" target="_blank" class="apply-link">View Positions</a>
-        </div>
-
-        <div class="job-card">
-            <div class="job-header">
                 <div class="job-title">Freelance Medical Education Content Creator</div>
                 <div class="salary">$75-$150/hr</div>
             </div>
@@ -2077,41 +1441,6 @@
 
         <div class="job-card">
             <div class="job-header">
-                <div class="job-title">Medical Advisor - Digital Health Platform</div>
-                <div class="salary">$150K-$200K</div>
-            </div>
-            <div class="company">Hinge Health</div>
-            <div class="job-details">
-                <div class="detail-row">
-                    <span class="icon icon-pin" aria-hidden="true"></span> Remote US
-                </div>
-                <div class="detail-row">
-                    <span class="icon icon-clock" aria-hidden="true"></span> Standard Business Hours
-                </div>
-                <div class="detail-row">
-                    <span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">100% Remote</span>
-                </div>
-            </div>
-            <div class="requirements">
-                <h4>Great Match For:</h4>
-                <ul>
-                    <li>MSK specialty background</li>
-                    <li>Interest in digital therapeutics</li>
-                    <li>Patient care protocol development</li>
-                    <li>Evidence-based treatment approaches</li>
-                </ul>
-            </div>
-            <div class="contact-info">
-                <strong>Apply:</strong>
-                <div>hingehealth.com/careers</div>
-                <div>Digital MSK programs, low-stress environment</div>
-                <div>Focus on conservative care and patient outcomes</div>
-            </div>
-            <a href="https://hingehealth.com/careers" target="_blank" class="apply-link">Apply Now</a>
-        </div>
-
-        <div class="job-card">
-            <div class="job-header">
                 <div class="job-title">Clinical Content Reviewer</div>
                 <div class="salary">$85-$125/hr</div>
             </div>
@@ -2152,78 +1481,6 @@
         </div>
 
         <!-- NEW JOBS - Week of September 4, 2025 -->
-        <div class="job-card">
-            <div class="job-header">
-                <div class="job-title">Remote Physician Advisor - Utilization Review</div>
-                <div class="salary">$164K-$165K/year</div>
-            </div>
-            <div class="company">Dane Street</div>
-            <div class="job-details">
-                <div class="detail-row"><span class="icon icon-pin" aria-hidden="true"></span> Remote (US-based)</div>
-                <div class="detail-row"><span class="icon icon-clock" aria-hidden="true"></span> Full-time, Flexible Hours</div>
-                <div class="detail-row"><span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">100% Remote</span></div>
-            </div>
-
-            <div class="job-description">
-                <h4><span class="icon icon-target" aria-hidden="true"></span> Role Overview</h4>
-                <p>Join a URAC accredited leader in IME and Record Review services. Provide medical expertise for
-                    utilization reviews supporting work comp, disability, and group health carriers. Non-clinical role
-                    perfect for experienced physicians seeking intellectual challenges without patient care burdens.</p>
-
-                <h4><span class="icon icon-money" aria-hidden="true"></span> Compensation & Benefits</h4>
-                <ul>
-                    <li>$164,000-$165,000 annual salary</li>
-                    <li>Comprehensive health benefits package</li>
-                    <li>Professional development opportunities</li>
-                    <li>Flexible remote work environment</li>
-                </ul>
-
-                <h4><span class="icon icon-clipboard" aria-hidden="true"></span> Key Responsibilities</h4>
-                <ul>
-                    <li>Conduct utilization reviews for orthopedic cases</li>
-                    <li>Evaluate medical necessity and appropriateness of treatments</li>
-                    <li>Collaborate with claims adjusters and case managers</li>
-                    <li>Provide timely medical opinions and documentation</li>
-                </ul>
-
-                <div class="benefits-highlight">
-                    <strong><span class="icon icon-sparkle" aria-hidden="true"></span> Perfect for:</strong> Board-certified physicians (especially Orthopedic Surgeons) seeking
-                    non-clinical work with excellent compensation
-                </div>
-            </div>
-
-            <div class="requirements">
-                <h4>Required Qualifications:</h4>
-                <ul>
-                    <li>Board certification in relevant specialty (Orthopedics preferred)</li>
-                    <li>Active, unrestricted medical license</li>
-                    <li>Minimum 5 years clinical experience</li>
-                    <li>Strong analytical and communication skills</li>
-                </ul>
-            </div>
-
-            <div class="contact-info">
-                <strong>Contact Information:</strong>
-                <div>Apply through Dane Street careers portal</div>
-                <div>Licensed physicians in NY, CT, MS, AZ, TX preferred</div>
-            </div>
-
-            <div class="interest-buttons">
-                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')"
-                    data-job-id="dane-street-utilization-review-2025">
-                    <span class="icon icon-star" aria-hidden="true"></span> Interested
-                </button>
-                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')"
-                    data-job-id="dane-street-utilization-review-2025">
-                    <span class="icon icon-x" aria-hidden="true"></span> Not Interested
-                </button>
-            </div>
-
-            <a href="https://www.monster.com/job-openings/remote-opportunity-physician-advisor-utilization-review-orthopedic-surgeon-stamford-ct--c13ca700-2dbb-45ea-bf81-5d135fcf6541"
-                target="_blank" class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Apply Now</a>
-            <a href="https://danestreet.com" target="_blank" class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> More Info</a>
-        </div>
-
         <div class="job-card">
             <div class="job-header">
                 <div class="job-title">Medical Science Liaison - Spine/MSK Therapeutics</div>
@@ -2367,208 +1624,6 @@
             <a href="https://www.examworks.com/careers" target="_blank" class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Apply Now</a>
             <a href="https://jooble.org/jobs-remote-physician-reviewer" target="_blank" class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> More
                 Info</a>
-        </div>
-
-        <div class="job-card">
-            <div class="job-header">
-                <div class="job-title">Remote PM&R Telehealth - Chronic Pain Management <span
-                        class="job-status hot">URGENT</span></div>
-                <div class="salary">$225+/hour</div>
-            </div>
-            <div class="company">LocumTenens.com Network</div>
-            <div class="job-details">
-                <div class="detail-row"><span class="icon icon-pin" aria-hidden="true"></span> Remote (Florida license preferred)</div>
-                <div class="detail-row"><span class="icon icon-clock" aria-hidden="true"></span> Contract Work, 1-2 Days/Week</div>
-                <div class="detail-row"><span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">100% Remote</span></div>
-            </div>
-
-            <div class="job-description">
-                <h4><span class="icon icon-target" aria-hidden="true"></span> Role Overview</h4>
-                <p>Immediate telehealth opportunity for PM&R physicians to provide chronic pain follow-up care. Perfect
-                    alignment with your spine and rehabilitation expertise. Flexible scheduling with premium
-                    compensation for specialized care delivery.</p>
-
-                <h4><span class="icon icon-money" aria-hidden="true"></span> Compensation & Benefits</h4>
-                <ul>
-                    <li>$225+ per hour with ongoing contract potential</li>
-                    <li>Flexible scheduling - work around your availability</li>
-                    <li>Weekly pay for reliable cash flow</li>
-                    <li>Potential for $2,200 per 4.5-hour shift blocks</li>
-                </ul>
-
-                <h4><span class="icon icon-clipboard" aria-hidden="true"></span> Key Responsibilities</h4>
-                <ul>
-                    <li>Conduct telehealth chronic pain follow-up visits</li>
-                    <li>Manage full spectrum of chronic pain medications</li>
-                    <li>Provide consultation on advanced interventional procedures</li>
-                    <li>Collaborate with multidisciplinary pain management teams</li>
-                </ul>
-
-                <div class="benefits-highlight">
-                    <strong><span class="icon icon-sparkle" aria-hidden="true"></span> Perfect for:</strong> PM&R physicians with pain management experience, especially those
-                    with spine expertise and interventional procedure knowledge
-                </div>
-            </div>
-
-            <div class="requirements">
-                <h4>Required Qualifications:</h4>
-                <ul>
-                    <li>Board certification in PM&R, Anesthesiology, or Pain Management</li>
-                    <li>Florida medical license (preferred) or multi-state licensing</li>
-                    <li>Experience with chronic pain management</li>
-                    <li>Knowledge of interventional procedures (nerve blocks, RF ablation, etc.)</li>
-                </ul>
-            </div>
-
-            <div class="contact-info">
-                <strong>Contact Information:</strong>
-                <div>LocumTenens.com - Physical Medicine & Rehabilitation Division</div>
-                <div>Multiple immediate openings starting August 2025</div>
-            </div>
-
-            <div class="interest-buttons">
-                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')"
-                    data-job-id="pmr-telehealth-pain-2025">
-                    <span class="icon icon-star" aria-hidden="true"></span> Interested
-                </button>
-                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')"
-                    data-job-id="pmr-telehealth-pain-2025">
-                    <span class="icon icon-x" aria-hidden="true"></span> Not Interested
-                </button>
-            </div>
-
-            <a href="https://www.locumtenens.com/physical-medicine-and-rehab-jobs/" target="_blank"
-                class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Apply Now</a>
-            <a href="https://www.indeed.com/q-telemedicine-physician-l-remote-jobs.html" target="_blank"
-                class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> More Info</a>
-        </div>
-
-        <!-- NEW JOBS - Week of September 9, 2025 -->
-        <div class="job-card">
-            <div class="job-header">
-                <div class="job-title">Remote Medical Director - Utilization Management <span class="priority">IDEAL
-                        FIT</span><span class="job-status new">NEW</span></div>
-                <div class="salary">$115K-$220K + Benefits (Part-Time)</div>
-            </div>
-            <div class="company">Centene Corporation</div>
-            <div class="job-details">
-                <div class="detail-row"><span class="icon icon-pin" aria-hidden="true"></span> Remote (Multiple States Available)</div>
-                <div class="detail-row"><span class="icon icon-clock" aria-hidden="true"></span> Part-Time, 20-30 hours/week</div>
-                <div class="detail-row"><span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">100% Remote</span></div>
-            </div>
-
-            <div class="job-description">
-                <h4><span class="icon icon-target" aria-hidden="true"></span> Role Overview</h4>
-                <p>Lead medical expertise in utilization management programs for a Fortune 500 healthcare company.
-                    Perfect match for Bobby's clinical background with executive compensation and remote flexibility.
-                </p>
-
-                <h4><span class="icon icon-money" aria-hidden="true"></span> Compensation & Benefits</h4>
-                <ul>
-                    <li>Part-time salary: $115,000 - $220,000 annually (20-30 hrs/week)</li>
-                    <li>Pro-rated benefits package available</li>
-                    <li>Senior consulting role with flexible schedule</li>
-                    <li>Work-life balance optimized arrangement</li>
-                </ul>
-
-                <h4><span class="icon icon-clipboard" aria-hidden="true"></span> Key Responsibilities</h4>
-                <ul>
-                    <li>Provide medical expertise in utilization management programs</li>
-                    <li>Review complex, controversial, or unusual services for medical necessity</li>
-                    <li>Interface with physicians and providers to improve utilization patterns</li>
-                    <li>Evaluate adverse trends in medical services utilization</li>
-                </ul>
-
-                <div class="benefits-highlight">
-                    <strong><span class="icon icon-target" aria-hidden="true"></span> Perfect for Bobby:</strong> Part-time executive role providing optimal work-life balance
-                    while leveraging clinical expertise for premium hourly compensation
-                </div>
-            </div>
-
-            <div class="contact-info">
-                <strong>Contact Information:</strong>
-                <div>Centene Corporation - Medical Management Division</div>
-                <div>Multiple remote positions available across states</div>
-            </div>
-
-            <div class="interest-buttons">
-                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')"
-                    data-job-id="centene-medical-director-2025">
-                    <span class="icon icon-star" aria-hidden="true"></span> Interested
-                </button>
-                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')"
-                    data-job-id="centene-medical-director-2025">
-                    <span class="icon icon-x" aria-hidden="true"></span> Not Interested
-                </button>
-            </div>
-
-            <a href="https://jobs.centene.com/us/en/jobs/1587445/remote-medical-director/" target="_blank"
-                class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Apply Now</a>
-            <a href="https://www.glassdoor.com/Job/remote-remote-medical-director-jobs-SRCH_IL.0,6_IS11047_KO7,30.htm"
-                target="_blank" class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> More Info</a>
-        </div>
-
-        <div class="job-card">
-            <div class="job-header">
-                <div class="job-title">Medical Science Liaison - Spine & Orthopedics <span class="priority">HIGH
-                        PAY</span><span class="job-status new">NEW</span></div>
-                <div class="salary">$92K-$137K + Bonuses (Part-Time)</div>
-            </div>
-            <div class="company">Johnson & Johnson Medical Devices</div>
-            <div class="job-details">
-                <div class="detail-row"><span class="icon icon-pin" aria-hidden="true"></span> Remote (Territory Coverage)</div>
-                <div class="detail-row"><span class="icon icon-clock" aria-hidden="true"></span> Part-Time, 20-25 hours/week</div>
-                <div class="detail-row"><span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">90% Remote</span></div>
-            </div>
-
-            <div class="job-description">
-                <h4><span class="icon icon-target" aria-hidden="true"></span> Role Overview</h4>
-                <p>Bridge between pharmaceutical innovation and medical community in spine/orthopedic therapeutics.
-                    Perfect alignment with Bobby's PM&R and spine expertise for premium pharma compensation.</p>
-
-                <h4><span class="icon icon-money" aria-hidden="true"></span> Compensation & Benefits</h4>
-                <ul>
-                    <li>Part-time salary: $92,000 - $137,000 annually (20-25 hrs/week)</li>
-                    <li>Pro-rated performance bonuses and stock options</li>
-                    <li>Travel reimbursement for limited territory coverage</li>
-                    <li>Flexible benefits package</li>
-                </ul>
-
-                <h4><span class="icon icon-clipboard" aria-hidden="true"></span> Key Responsibilities</h4>
-                <ul>
-                    <li>Engage KOLs in spine and orthopedic medicine</li>
-                    <li>Provide scientific and clinical expertise to healthcare providers</li>
-                    <li>Support clinical trials and research initiatives</li>
-                    <li>Deliver educational presentations to medical professionals</li>
-                </ul>
-
-                <div class="benefits-highlight">
-                    <strong><span class="icon icon-target" aria-hidden="true"></span> Perfect for Bobby:</strong> Leverage clinical expertise in pharmaceutical setting with
-                    spine specialization and remote flexibility
-                </div>
-            </div>
-
-            <div class="contact-info">
-                <strong>Contact Information:</strong>
-                <div>Johnson & Johnson Medical Affairs</div>
-                <div>Spine/Orthopedic Therapeutics Division</div>
-            </div>
-
-            <div class="interest-buttons">
-                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')"
-                    data-job-id="jj-msl-spine-2025">
-                    <span class="icon icon-star" aria-hidden="true"></span> Interested
-                </button>
-                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')"
-                    data-job-id="jj-msl-spine-2025">
-                    <span class="icon icon-x" aria-hidden="true"></span> Not Interested
-                </button>
-            </div>
-
-            <a href="https://www.glassdoor.com/Salary/Johnson-and-Johnson-Medical-Science-Liaison-Salaries-E364_D_KO20,43.htm"
-                target="_blank" class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Apply Now</a>
-            <a href="https://www.ziprecruiter.com/Jobs/Remote-Medical-Science-Liaison-Orthopedic" target="_blank"
-                class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> More Info</a>
         </div>
 
         <div class="job-card">
@@ -2883,214 +1938,485 @@
             <a href="https://www.physiciansidegigs.com/chart-review" target="_blank" class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> More Info</a>
         </div>
 
-        <!-- NEW OPPORTUNITIES - March 18, 2026 -->
+        <!-- NEW OPPORTUNITIES - March 20, 2026 -->
         <div class="new-section new-section--fresh">
             <span class="icon icon--lg icon-star" aria-hidden="true"></span> FRESH OPPORTUNITIES - MARCH 2026 <span class="icon icon--lg icon-star" aria-hidden="true"></span>
-            <br><small>New Categories: Disability Insurance, Digital Health, Medical Device, Life Insurance & More</small>
+            <br><small>10 Fresh Verified Listings: Insurance Medical Directors, IME, Telehealth, Physician Advisors & More</small>
         </div>
 
         <div class="job-card">
             <div class="job-header">
-                <div class="job-title">Medical Director - Disability Insurance Claims <span class="job-status new">NEW</span></div>
-                <div class="salary">$250K-$400K/year</div>
+                <div class="job-title">Medical Director - FEHBP <span class="priority">VERIFIED</span><span class="job-status new">NEW</span></div>
+                <div class="salary">$198K - $357K</div>
             </div>
-            <div class="company">Unum Group / The Hartford / Lincoln Financial</div>
+            <div class="company">CVS Health / Aetna</div>
             <div class="job-details">
-                <div class="detail-row"><span class="icon icon-pin" aria-hidden="true"></span> Remote (US-based)</div>
-                <div class="detail-row"><span class="icon icon-clock" aria-hidden="true"></span> Full-time, Business Hours</div>
+                <div class="detail-row"><span class="icon icon-pin" aria-hidden="true"></span> Remote (US-based, Mountain Time preferred)</div>
+                <div class="detail-row"><span class="icon icon-clock" aria-hidden="true"></span> Full-time</div>
                 <div class="detail-row"><span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">100% Remote</span></div>
             </div>
-
             <div class="job-description">
                 <h4><span class="icon icon-target" aria-hidden="true"></span> Role Overview</h4>
-                <p>Review long-term and short-term disability insurance claims as a medical director at major disability insurers. Evaluate clinical documentation, assess functional capacity, and make disability determinations. Entirely desk-based, no patient care.</p>
-
-                <h4><span class="icon icon-money" aria-hidden="true"></span> Compensation & Benefits</h4>
-                <ul>
-                    <li>$250,000 - $400,000 annual salary</li>
-                    <li>Full insurance company benefits (health, retirement, life)</li>
-                    <li>Part-time options available at some carriers</li>
-                    <li>No call, no nights, no weekends</li>
-                </ul>
-
+                <p>Provide medical oversight for Aetna's Federal Employee Health Benefits Program (FEHBP). Oversee utilization review, medical policy implementation, quality assurance, and clinical program evaluation.</p>
                 <h4><span class="icon icon-clipboard" aria-hidden="true"></span> Key Responsibilities</h4>
                 <ul>
-                    <li>Review disability claims and clinical documentation</li>
-                    <li>Assess functional capacity and return-to-work potential</li>
-                    <li>Conduct peer-to-peer consultations with treating physicians</li>
-                    <li>Provide medical opinions on claim eligibility</li>
+                    <li>Oversee utilization review and case management for federal employees</li>
+                    <li>Develop and evaluate clinical/medical programs</li>
+                    <li>Serve as clinical liaison to network providers and facilities</li>
+                    <li>Support medical and pharmacy management programs</li>
                 </ul>
-
                 <div class="benefits-highlight">
-                    <strong><span class="icon icon-target" aria-hidden="true"></span> Perfect for Bobby:</strong> PM&R expertise in functional assessment and disability evaluation is the ideal background for these roles
+                    <strong><span class="icon icon-sparkle" aria-hidden="true"></span> Perfect for:</strong> Application window closes 03/31/2026 - apply soon. Prestigious federal program oversight role.
                 </div>
             </div>
-
             <div class="requirements">
                 <h4>Required Qualifications:</h4>
                 <ul>
-                    <li>MD or DO with active medical license</li>
-                    <li>Board certification (PM&R/MSK specialties highly valued)</li>
+                    <li>MD/DO with active unrestricted license</li>
+                    <li>Board Certification</li>
                     <li>5+ years clinical experience</li>
-                    <li>Strong analytical and documentation skills</li>
                 </ul>
             </div>
-
             <div class="contact-info">
                 <strong>Contact Information:</strong>
-                <div>Unum: jobs.unum.com | Hartford: thehartford.com/careers</div>
-                <div>Lincoln Financial: jobs.lincolnfinancial.com | Guardian: careers.guardianlife.com</div>
+                <div>Apply via CVS Health Careers</div>
             </div>
-
+            <a href="https://jobs.cvshealth.com/us/en/aetna-jobs" target="_blank" rel="noopener noreferrer" class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Apply Now</a>
+            <a href="https://www.ziprecruiter.com/Jobs/Cvs-Aetna-Medical-Director" target="_blank" rel="noopener noreferrer" class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> More Info</a>
             <div class="interest-buttons">
-                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')"
-                    data-job-id="disability-insurance-md-2026">
-                    <span class="icon icon-star" aria-hidden="true"></span> Interested
-                </button>
-                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')"
-                    data-job-id="disability-insurance-md-2026">
-                    <span class="icon icon-x" aria-hidden="true"></span> Not Interested
-                </button>
+                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')" data-job-id="cvs-fehbp-2026"><span class="icon icon-star" aria-hidden="true"></span> Interested</button>
+                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')" data-job-id="cvs-fehbp-2026"><span class="icon icon-x" aria-hidden="true"></span> Not Interested</button>
             </div>
-
-            <a href="https://jobs.unum.com" target="_blank" class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Unum Careers</a>
-            <a href="https://careers.guardianlife.com" target="_blank" class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> Guardian Careers</a>
         </div>
 
         <div class="job-card">
             <div class="job-header">
-                <div class="job-title">Medical Director - Spine & Pain Therapies (Device) <span class="priority">PERFECT FIT</span><span class="job-status new">NEW</span></div>
-                <div class="salary">$260K-$370K/year + RSUs</div>
+                <div class="job-title">Associate Medical Director / Physician Advisor <span class="priority">VERIFIED</span><span class="job-status new">NEW</span></div>
+                <div class="salary">$220K - $300K</div>
             </div>
-            <div class="company">Medtronic / Boston Scientific - Neuromodulation</div>
+            <div class="company">Medical Review Institute of America (MRIoA)</div>
+            <div class="job-details">
+                <div class="detail-row"><span class="icon icon-pin" aria-hidden="true"></span> Remote (US-based)</div>
+                <div class="detail-row"><span class="icon icon-clock" aria-hidden="true"></span> Full-time (Salaried)</div>
+                <div class="detail-row"><span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">100% Remote</span></div>
+            </div>
+            <div class="job-description">
+                <h4><span class="icon icon-target" aria-hidden="true"></span> Role Overview</h4>
+                <p>Join MRIoA's fully remote team reviewing medical, disability, workers' compensation, and auto claims for insurance carriers, employers, and TPAs nationwide. Award-winning remote workplace (2024 Top Workplaces for Remote Work).</p>
+                <h4><span class="icon icon-money" aria-hidden="true"></span> Compensation & Benefits</h4>
+                <ul>
+                    <li>Full benefits: healthcare, vision, dental</li>
+                    <li>401k with generous company match</li>
+                    <li>30 days PTO per year</li>
+                </ul>
+                <h4><span class="icon icon-clipboard" aria-hidden="true"></span> Key Responsibilities</h4>
+                <ul>
+                    <li>Evaluate requests for medical services using clinical expertise</li>
+                    <li>Interpret benefit language and medical policies</li>
+                    <li>Make sound coverage determinations</li>
+                    <li>Review disability, workers' comp, and auto claims</li>
+                </ul>
+                <div class="benefits-highlight">
+                    <strong><span class="icon icon-sparkle" aria-hidden="true"></span> Perfect for:</strong> MRIoA covers 150+ specialties including PM&R. Top-rated remote employer with excellent benefits.
+                </div>
+            </div>
+            <div class="requirements">
+                <h4>Required Qualifications:</h4>
+                <ul>
+                    <li>MD/DO with active unrestricted license</li>
+                    <li>Board Certification in clinical specialty</li>
+                    <li>5+ years clinical experience</li>
+                </ul>
+            </div>
+            <div class="contact-info">
+                <strong>Contact Information:</strong>
+                <div>Apply via MRIoA Careers</div>
+            </div>
+            <a href="https://www.mrioa.com/careers/" target="_blank" rel="noopener noreferrer" class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Apply Now</a>
+            <a href="https://jobgether.com/offer/696030132b723d71f7298640-medical-director-physician-advisor" target="_blank" rel="noopener noreferrer" class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> More Info</a>
+            <div class="interest-buttons">
+                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')" data-job-id="mrioa-md-2026"><span class="icon icon-star" aria-hidden="true"></span> Interested</button>
+                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')" data-job-id="mrioa-md-2026"><span class="icon icon-x" aria-hidden="true"></span> Not Interested</button>
+            </div>
+        </div>
+
+        <div class="job-card">
+            <div class="job-header">
+                <div class="job-title">Physician Advisor - Revenue Integrity <span class="job-status new">NEW</span></div>
+                <div class="salary">$145K - $199K</div>
+            </div>
+            <div class="company">R1 RCM, Inc.</div>
             <div class="job-details">
                 <div class="detail-row"><span class="icon icon-pin" aria-hidden="true"></span> Remote (US-based)</div>
                 <div class="detail-row"><span class="icon icon-clock" aria-hidden="true"></span> Full-time</div>
                 <div class="detail-row"><span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">100% Remote</span></div>
             </div>
-
             <div class="job-description">
                 <h4><span class="icon icon-target" aria-hidden="true"></span> Role Overview</h4>
-                <p>Provide medical and scientific leadership for spinal cord stimulation and interventional spine device portfolios. Oversee clinical evidence generation, support regulatory submissions, and engage with physician advisory boards. This is NOT a sales role - it sits within the clinical/scientific organization.</p>
-
-                <h4><span class="icon icon-money" aria-hidden="true"></span> Compensation & Benefits</h4>
-                <ul>
-                    <li>$260,000 - $370,000 base salary</li>
-                    <li>Annual bonus + RSUs/stock options</li>
-                    <li>Major medical device company benefits</li>
-                    <li>Minimal travel (advisory board meetings only)</li>
-                </ul>
-
+                <p>Help client facilities navigate compliant revenue by reviewing payor peer-to-peer cases. Evaluate authorization denials and advise on appropriateness of admission status, procedures, and care settings.</p>
                 <h4><span class="icon icon-clipboard" aria-hidden="true"></span> Key Responsibilities</h4>
                 <ul>
-                    <li>Lead clinical evidence strategy for spine/pain device portfolio</li>
-                    <li>Review adverse event data and safety reports</li>
-                    <li>Support FDA regulatory submissions with clinical expertise</li>
-                    <li>Engage physician advisory boards and KOL relationships</li>
+                    <li>Review payor peer-to-peer cases for compliance</li>
+                    <li>Evaluate denied authorizations and documentation</li>
+                    <li>Discuss cases with payor medical directors</li>
+                    <li>Advise on clinical documentation improvement</li>
                 </ul>
-
                 <div class="benefits-highlight">
-                    <strong><span class="icon icon-target" aria-hidden="true"></span> Perfect for Bobby:</strong> Interventional spine + EMG/NCS expertise maps DIRECTLY to spinal cord stimulator and neuromodulation devices. This is the single best specialty alignment on the board.
+                    <strong><span class="icon icon-sparkle" aria-hidden="true"></span> Perfect for:</strong> Retired and part-time physicians are highly encouraged to apply. Low-stress advisory role.
                 </div>
             </div>
-
             <div class="requirements">
                 <h4>Required Qualifications:</h4>
                 <ul>
-                    <li>MD or DO with interventional pain/spine background</li>
-                    <li>Board certification (PM&R ideal)</li>
-                    <li>Experience with neuromodulation or spine interventions</li>
-                    <li>EMG/NCS expertise highly valued</li>
+                    <li>MD/DO with active license</li>
+                    <li>Board Certification</li>
+                    <li>Clinical practice experience</li>
                 </ul>
             </div>
-
             <div class="contact-info">
                 <strong>Contact Information:</strong>
-                <div>Medtronic: jobs.medtronic.com (search "Medical Director Spine")</div>
-                <div>Boston Scientific: jobs.bostonscientific.com (search "Neuromodulation")</div>
+                <div>Apply via R1 RCM Careers</div>
             </div>
-
+            <a href="https://www.r1rcm.com/careers/" target="_blank" rel="noopener noreferrer" class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Apply Now</a>
+            <a href="https://www.indeed.com/q-physician-advisor-remote-full-time-jobs.html" target="_blank" rel="noopener noreferrer" class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> More Info</a>
             <div class="interest-buttons">
-                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')"
-                    data-job-id="meddevice-spine-md-2026">
-                    <span class="icon icon-star" aria-hidden="true"></span> Interested
-                </button>
-                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')"
-                    data-job-id="meddevice-spine-md-2026">
-                    <span class="icon icon-x" aria-hidden="true"></span> Not Interested
-                </button>
+                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')" data-job-id="r1rcm-pa-2026"><span class="icon icon-star" aria-hidden="true"></span> Interested</button>
+                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')" data-job-id="r1rcm-pa-2026"><span class="icon icon-x" aria-hidden="true"></span> Not Interested</button>
             </div>
-
-            <a href="https://jobs.medtronic.com" target="_blank" class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Medtronic Careers</a>
-            <a href="https://jobs.bostonscientific.com" target="_blank" class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> Boston Scientific</a>
         </div>
 
         <div class="job-card">
             <div class="job-header">
-                <div class="job-title">Medical Director - MSK Digital Therapeutics <span class="job-status new">NEW</span></div>
-                <div class="salary">$300K-$450K/year + Equity</div>
+                <div class="job-title">PRN Physician Reviewer - Flexible Schedule <span class="priority">IDEAL FIT</span><span class="job-status new">NEW</span></div>
+                <div class="salary">$85 - $110/hour</div>
             </div>
-            <div class="company">Sword Health / Omada Health / Virta Health</div>
+            <div class="company">Medical Review Institute of America (MRIoA)</div>
+            <div class="job-details">
+                <div class="detail-row"><span class="icon icon-pin" aria-hidden="true"></span> Remote (Nationwide)</div>
+                <div class="detail-row"><span class="icon icon-clock" aria-hidden="true"></span> PRN / Contract (1099)</div>
+                <div class="detail-row"><span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">100% Remote</span></div>
+            </div>
+            <div class="job-description">
+                <h4><span class="icon icon-target" aria-hidden="true"></span> Role Overview</h4>
+                <p>Join MRIoA's network of 700+ licensed physicians reviewing prior authorizations, appeals, and healthcare claims from home. Minimum 1-2 hours/week with option for more. Continue practicing while reviewing cases.</p>
+                <h4><span class="icon icon-clipboard" aria-hidden="true"></span> Key Responsibilities</h4>
+                <ul>
+                    <li>Review prior authorization requests in your specialty</li>
+                    <li>Provide unbiased clinical guidance on appeals</li>
+                    <li>Align with ERISA/DOL and regulatory requirements</li>
+                </ul>
+                <div class="benefits-highlight">
+                    <strong><span class="icon icon-sparkle" aria-hidden="true"></span> Perfect for:</strong> Only 1-2 hours/week minimum. PM&R is one of 150+ specialties in their network. Ultimate flexibility.
+                </div>
+            </div>
+            <div class="requirements">
+                <h4>Required Qualifications:</h4>
+                <ul>
+                    <li>MD/DO with active license</li>
+                    <li>Board Certification in clinical specialty</li>
+                    <li>Active clinical practice preferred</li>
+                </ul>
+            </div>
+            <div class="contact-info">
+                <strong>Contact Information:</strong>
+                <div>Apply via MRIoA Reviewer Panel</div>
+            </div>
+            <a href="https://www.mrioa.com/reviewer-panel/" target="_blank" rel="noopener noreferrer" class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Apply Now</a>
+            <a href="https://www.mrioa.com/careers/" target="_blank" rel="noopener noreferrer" class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> More Info</a>
+            <div class="interest-buttons">
+                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')" data-job-id="mrioa-prn-2026"><span class="icon icon-star" aria-hidden="true"></span> Interested</button>
+                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')" data-job-id="mrioa-prn-2026"><span class="icon icon-x" aria-hidden="true"></span> Not Interested</button>
+            </div>
+        </div>
+
+        <div class="job-card">
+            <div class="job-header">
+                <div class="job-title">PM&R Telehealth Physician <span class="priority">PERFECT FIT</span><span class="job-status new">NEW</span></div>
+                <div class="salary">Competitive (Volume-Based)</div>
+            </div>
+            <div class="company">Go Clinic MD</div>
+            <div class="job-details">
+                <div class="detail-row"><span class="icon icon-pin" aria-hidden="true"></span> Remote (Nationwide)</div>
+                <div class="detail-row"><span class="icon icon-clock" aria-hidden="true"></span> Independent Contractor (1099)</div>
+                <div class="detail-row"><span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">100% Remote</span></div>
+            </div>
+            <div class="job-description">
+                <h4><span class="icon icon-target" aria-hidden="true"></span> Role Overview</h4>
+                <p>Specifically recruiting PM&R physicians for telehealth services. Collaborate remotely to optimize neurologic recovery, functional restoration, and neuropsychiatric symptom resolution via state-of-the-art telemedicine platform.</p>
+                <h4><span class="icon icon-money" aria-hidden="true"></span> Compensation & Benefits</h4>
+                <ul>
+                    <li>Competitive compensation based on expertise and patient volume</li>
+                    <li>Monthly payments with malpractice insurance provided</li>
+                    <li>Set your own hours and patient volume</li>
+                </ul>
+                <h4><span class="icon icon-clipboard" aria-hidden="true"></span> Key Responsibilities</h4>
+                <ul>
+                    <li>Provide PM&R telehealth consultations</li>
+                    <li>Coordinate functional restoration and rehab plans</li>
+                    <li>Collaborate with neurology and neuropsychiatry teams</li>
+                </ul>
+                <div class="benefits-highlight">
+                    <strong><span class="icon icon-sparkle" aria-hidden="true"></span> Perfect for:</strong> Specifically seeks PM&R physicians. All admin, marketing, and patient acquisition handled for you.
+                </div>
+            </div>
+            <div class="requirements">
+                <h4>Required Qualifications:</h4>
+                <ul>
+                    <li>Board Certified/Eligible in PM&R</li>
+                    <li>Active medical license</li>
+                    <li>Telemedicine experience preferred</li>
+                </ul>
+            </div>
+            <div class="contact-info">
+                <strong>Contact Information:</strong>
+                <div>Email: jobs@goclinicmd.com (include CV and specify PM&R specialty)</div>
+            </div>
+            <a href="mailto:jobs@goclinicmd.com?subject=PM%26R%20Telehealth%20Position&body=I%20am%20interested%20in%20the%20PM%26R%20telehealth%20position.%20Please%20find%20my%20CV%20attached." target="_blank" rel="noopener noreferrer" class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Apply Now</a>
+            <a href="https://www.indeed.com/q-physiatrist-l-remote-jobs.html" target="_blank" rel="noopener noreferrer" class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> More Info</a>
+            <div class="interest-buttons">
+                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')" data-job-id="goclinic-pmr-2026"><span class="icon icon-star" aria-hidden="true"></span> Interested</button>
+                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')" data-job-id="goclinic-pmr-2026"><span class="icon icon-x" aria-hidden="true"></span> Not Interested</button>
+            </div>
+        </div>
+
+        <div class="job-card">
+            <div class="job-header">
+                <div class="job-title">IME Physician - Nationwide Panel <span class="priority">HIGH PAY</span><span class="job-status new">NEW</span></div>
+                <div class="salary">$600 - $1,500/exam</div>
+            </div>
+            <div class="company">ExamWorks / Dane Street / IME Networks</div>
+            <div class="job-details">
+                <div class="detail-row"><span class="icon icon-pin" aria-hidden="true"></span> Remote + In-Person Exams</div>
+                <div class="detail-row"><span class="icon icon-clock" aria-hidden="true"></span> Independent Contractor (1099)</div>
+                <div class="detail-row"><span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge">Hybrid (Records Remote / Exams In-Person)</span></div>
+            </div>
+            <div class="job-description">
+                <h4><span class="icon icon-target" aria-hidden="true"></span> Role Overview</h4>
+                <p>Perform independent medical examinations for workers' compensation and disability cases. PM&R/spine physicians are in extremely high demand. Caseload customized to your schedule as a 1099 contractor.</p>
+                <h4><span class="icon icon-money" aria-hidden="true"></span> Compensation & Benefits</h4>
+                <ul>
+                    <li>$600 - $1,500+ per exam</li>
+                    <li>Potential $100K-$150K+ working just one day/week</li>
+                    <li>No-show fees often included</li>
+                </ul>
+                <h4><span class="icon icon-clipboard" aria-hidden="true"></span> Key Responsibilities</h4>
+                <ul>
+                    <li>Conduct independent medical examinations</li>
+                    <li>Review medical records and write detailed reports</li>
+                    <li>Provide expert medical opinions on disability/injury</li>
+                </ul>
+                <div class="benefits-highlight">
+                    <strong><span class="icon icon-sparkle" aria-hidden="true"></span> Perfect for:</strong> PM&R/spine is the #1 most in-demand IME specialty due to workers' comp MSK claim volume.
+                </div>
+            </div>
+            <div class="requirements">
+                <h4>Required Qualifications:</h4>
+                <ul>
+                    <li>MD/DO with active license</li>
+                    <li>Board Certification (PM&R ideal)</li>
+                    <li>Clinical experience in specialty</li>
+                </ul>
+            </div>
+            <div class="contact-info">
+                <strong>Contact Information:</strong>
+                <div>ExamWorks: physicianrecruiting@examworks.com | Dane Street: marketing@danestreet.com</div>
+            </div>
+            <a href="https://www.examworks.com/careers" target="_blank" rel="noopener noreferrer" class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Apply Now</a>
+            <a href="https://www.ziprecruiter.com/Jobs/Independent-Medical-Examiner" target="_blank" rel="noopener noreferrer" class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> More Info</a>
+            <div class="interest-buttons">
+                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')" data-job-id="ime-panel-2026"><span class="icon icon-star" aria-hidden="true"></span> Interested</button>
+                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')" data-job-id="ime-panel-2026"><span class="icon icon-x" aria-hidden="true"></span> Not Interested</button>
+            </div>
+        </div>
+
+        <div class="job-card">
+            <div class="job-header">
+                <div class="job-title">Expert Witness - Spine & MSK Cases <span class="priority">HIGH PAY</span><span class="job-status new">NEW</span></div>
+                <div class="salary">$500 - $1,000+/hour</div>
+            </div>
+            <div class="company">SEAK Expert Witness Network / Expert Institute</div>
+            <div class="job-details">
+                <div class="detail-row"><span class="icon icon-pin" aria-hidden="true"></span> Remote (Nationwide)</div>
+                <div class="detail-row"><span class="icon icon-clock" aria-hidden="true"></span> Flexible / Per-Case</div>
+                <div class="detail-row"><span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">100% Remote</span></div>
+            </div>
+            <div class="job-description">
+                <h4><span class="icon icon-target" aria-hidden="true"></span> Role Overview</h4>
+                <p>Provide expert medical testimony and case reviews for personal injury, medical malpractice, and workers' compensation litigation. Work is entirely flexible and remote - accept cases when available, decline when not.</p>
+                <h4><span class="icon icon-money" aria-hidden="true"></span> Compensation & Benefits</h4>
+                <ul>
+                    <li>$500 - $1,000+ per hour for testimony and consulting</li>
+                    <li>$2,800+ per claimant examination</li>
+                    <li>Completely flexible schedule - take cases as desired</li>
+                </ul>
+                <h4><span class="icon icon-clipboard" aria-hidden="true"></span> Key Responsibilities</h4>
+                <ul>
+                    <li>Review medical records and provide written opinions</li>
+                    <li>Testify at depositions and trial (often via video)</li>
+                    <li>Consult with attorneys on medical standard of care</li>
+                </ul>
+                <div class="benefits-highlight">
+                    <strong><span class="icon icon-sparkle" aria-hidden="true"></span> Perfect for:</strong> 20+ years of spine experience makes Bobby extremely valuable. Spine/MSK cases are the most common in personal injury litigation.
+                </div>
+            </div>
+            <div class="requirements">
+                <h4>Required Qualifications:</h4>
+                <ul>
+                    <li>MD/DO Board Certified in relevant specialty</li>
+                    <li>Active clinical practice (current or recent)</li>
+                    <li>Strong communication and writing skills</li>
+                </ul>
+            </div>
+            <div class="contact-info">
+                <strong>Contact Information:</strong>
+                <div>Register at SEAK Expert Witness Directory or Expert Institute</div>
+            </div>
+            <a href="https://expertinstitute.com" target="_blank" rel="noopener noreferrer" class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Apply Now</a>
+            <a href="https://www.supplementalincomeforphysicians.com/become-independent-medical-examiner/" target="_blank" rel="noopener noreferrer" class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> More Info</a>
+            <div class="interest-buttons">
+                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')" data-job-id="expert-witness-2026"><span class="icon icon-star" aria-hidden="true"></span> Interested</button>
+                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')" data-job-id="expert-witness-2026"><span class="icon icon-x" aria-hidden="true"></span> Not Interested</button>
+            </div>
+        </div>
+
+        <div class="job-card">
+            <div class="job-header">
+                <div class="job-title">Remote Chart Review Physician <span class="job-status new">NEW</span></div>
+                <div class="salary">$85 - $150/hour</div>
+            </div>
+            <div class="company">Multiple Companies (158+ Open Positions)</div>
+            <div class="job-details">
+                <div class="detail-row"><span class="icon icon-pin" aria-hidden="true"></span> Remote (US-based)</div>
+                <div class="detail-row"><span class="icon icon-clock" aria-hidden="true"></span> Full-time / Part-time / Contract</div>
+                <div class="detail-row"><span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">100% Remote</span></div>
+            </div>
+            <div class="job-description">
+                <h4><span class="icon icon-target" aria-hidden="true"></span> Role Overview</h4>
+                <p>Review medical records and charts remotely for insurance companies, health plans, and review organizations. 158+ medical record reviewer jobs currently open in remote positions as of March 2026. No patient contact required.</p>
+                <h4><span class="icon icon-clipboard" aria-hidden="true"></span> Key Responsibilities</h4>
+                <ul>
+                    <li>Review medical records for clinical accuracy</li>
+                    <li>Assess appropriateness of treatment plans</li>
+                    <li>Write clinical review determinations</li>
+                    <li>Conduct peer-to-peer calls as needed</li>
+                </ul>
+                <div class="benefits-highlight">
+                    <strong><span class="icon icon-sparkle" aria-hidden="true"></span> Perfect for:</strong> No call, set/flexible hours, no malpractice risk. One of the easiest transitions from clinical practice.
+                </div>
+            </div>
+            <div class="requirements">
+                <h4>Required Qualifications:</h4>
+                <ul>
+                    <li>MD/DO with active license</li>
+                    <li>Board Certification</li>
+                    <li>3+ years clinical experience</li>
+                </ul>
+            </div>
+            <div class="contact-info">
+                <strong>Contact Information:</strong>
+                <div>Search Glassdoor or Indeed for "remote medical record reviewer"</div>
+            </div>
+            <a href="https://www.indeed.com/q-chart-review-physician-l-remote-jobs.html" target="_blank" rel="noopener noreferrer" class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Apply Now</a>
+            <a href="https://www.glassdoor.com/Job/remote-medical-record-reviewer-jobs-SRCH_KO0,30.htm" target="_blank" rel="noopener noreferrer" class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> More Info</a>
+            <div class="interest-buttons">
+                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')" data-job-id="chart-review-2026"><span class="icon icon-star" aria-hidden="true"></span> Interested</button>
+                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')" data-job-id="chart-review-2026"><span class="icon icon-x" aria-hidden="true"></span> Not Interested</button>
+            </div>
+        </div>
+
+        <div class="job-card">
+            <div class="job-header">
+                <div class="job-title">Physician Advisor - Ensemble Health Partners <span class="job-status new">NEW</span></div>
+                <div class="salary">$145K - $199K</div>
+            </div>
+            <div class="company">Ensemble Health Partners</div>
             <div class="job-details">
                 <div class="detail-row"><span class="icon icon-pin" aria-hidden="true"></span> Remote (US-based)</div>
                 <div class="detail-row"><span class="icon icon-clock" aria-hidden="true"></span> Full-time</div>
                 <div class="detail-row"><span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">100% Remote</span></div>
             </div>
-
             <div class="job-description">
                 <h4><span class="icon icon-target" aria-hidden="true"></span> Role Overview</h4>
-                <p>Lead clinical strategy at high-growth digital health startups focused on musculoskeletal care and chronic condition management. Oversee clinical programs, develop care protocols, and provide medical oversight for digital therapeutics platforms. Startup equity can be very valuable.</p>
-
-                <h4><span class="icon icon-money" aria-hidden="true"></span> Compensation & Benefits</h4>
-                <ul>
-                    <li>$300,000 - $450,000 base salary</li>
-                    <li>Significant equity/stock options (startup upside)</li>
-                    <li>Comprehensive benefits at well-funded startups</li>
-                    <li>Fully remote, flexible work culture</li>
-                </ul>
-
+                <p>Serve as a physician advisor helping healthcare facilities with utilization management, clinical documentation integrity, and payor dispute resolution. Ensemble is a top employer of remote physician advisors nationwide.</p>
                 <h4><span class="icon icon-clipboard" aria-hidden="true"></span> Key Responsibilities</h4>
                 <ul>
-                    <li>Design and oversee clinical care pathways</li>
-                    <li>Ensure clinical quality and patient safety standards</li>
-                    <li>Contribute to product development with medical expertise</li>
-                    <li>Build and lead clinical teams and protocols</li>
+                    <li>Review clinical documentation for admission status accuracy</li>
+                    <li>Conduct peer-to-peer reviews with payor medical directors</li>
+                    <li>Advise on medical necessity and level of care</li>
+                    <li>Support denial prevention and appeals</li>
                 </ul>
-
                 <div class="benefits-highlight">
-                    <strong><span class="icon icon-target" aria-hidden="true"></span> Perfect for Bobby:</strong> Sword Health specializes in MSK digital therapeutics - a direct match for PM&R/spine expertise with startup equity upside
+                    <strong><span class="icon icon-sparkle" aria-hidden="true"></span> Perfect for:</strong> Ensemble actively recruits retired and part-time physicians. Non-clinical, advisory role with no patient contact.
                 </div>
             </div>
-
             <div class="requirements">
                 <h4>Required Qualifications:</h4>
                 <ul>
-                    <li>MD or DO with clinical practice experience</li>
-                    <li>MSK/rehabilitation background preferred</li>
-                    <li>Interest in digital health innovation</li>
-                    <li>Leadership and team-building experience</li>
+                    <li>MD/DO with active license</li>
+                    <li>Board Certification</li>
+                    <li>Clinical experience in any specialty</li>
                 </ul>
             </div>
-
             <div class="contact-info">
                 <strong>Contact Information:</strong>
-                <div>Sword Health: swordhealth.com/company/careers</div>
-                <div>Omada Health: omadahealth.com/careers</div>
+                <div>Apply via Ensemble Health Partners Careers</div>
             </div>
-
+            <a href="https://www.glassdoor.com/Job/remote-physician-advisor-jobs-SRCH_IL.0,6_IS11047_KO7,24.htm" target="_blank" rel="noopener noreferrer" class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Apply Now</a>
+            <a href="https://www.indeed.com/q-physician-advisor-l-remote-jobs.html" target="_blank" rel="noopener noreferrer" class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> More Info</a>
             <div class="interest-buttons">
-                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')"
-                    data-job-id="digital-health-md-2026">
-                    <span class="icon icon-star" aria-hidden="true"></span> Interested
-                </button>
-                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')"
-                    data-job-id="digital-health-md-2026">
-                    <span class="icon icon-x" aria-hidden="true"></span> Not Interested
-                </button>
+                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')" data-job-id="ensemble-pa-2026"><span class="icon icon-star" aria-hidden="true"></span> Interested</button>
+                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')" data-job-id="ensemble-pa-2026"><span class="icon icon-x" aria-hidden="true"></span> Not Interested</button>
             </div>
+        </div>
 
-            <a href="https://swordhealth.com/company/careers" target="_blank" class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Sword Health</a>
-            <a href="https://www.omadahealth.com/careers" target="_blank" class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> Omada Health</a>
+        <div class="job-card">
+            <div class="job-header">
+                <div class="job-title">Remote Utilization Review Physician <span class="job-status new">NEW</span></div>
+                <div class="salary">$85 - $110+/hour</div>
+            </div>
+            <div class="company">Multiple Insurance Companies &amp; IROs (381+ Open Positions)</div>
+            <div class="job-details">
+                <div class="detail-row"><span class="icon icon-pin" aria-hidden="true"></span> Remote (US-based)</div>
+                <div class="detail-row"><span class="icon icon-clock" aria-hidden="true"></span> Full-time / Part-time / Contract</div>
+                <div class="detail-row"><span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">100% Remote</span></div>
+            </div>
+            <div class="job-description">
+                <h4><span class="icon icon-target" aria-hidden="true"></span> Role Overview</h4>
+                <p>381+ utilization review positions currently open across health plans, insurance companies, and independent review organizations. The most common non-clinical career transition for physicians - plentiful, remote, and well-compensated.</p>
+                <h4><span class="icon icon-money" aria-hidden="true"></span> Compensation & Benefits</h4>
+                <ul>
+                    <li>Contract: $85-$110+/hour</li>
+                    <li>Full-time salaried: $180K-$300K+ with benefits</li>
+                    <li>No call, no weekends, no malpractice risk</li>
+                </ul>
+                <h4><span class="icon icon-clipboard" aria-hidden="true"></span> Key Responsibilities</h4>
+                <ul>
+                    <li>Review and approve/deny medical service requests</li>
+                    <li>Apply clinical criteria and medical policies</li>
+                    <li>Conduct peer-to-peer calls with treating physicians</li>
+                </ul>
+                <div class="benefits-highlight">
+                    <strong><span class="icon icon-sparkle" aria-hidden="true"></span> Perfect for:</strong> Most UR positions are now 100% remote. No doctor-patient relationship means no malpractice risk. Ideal lifestyle transition.
+                </div>
+            </div>
+            <div class="requirements">
+                <h4>Required Qualifications:</h4>
+                <ul>
+                    <li>MD/DO with active license</li>
+                    <li>Board Certification in any clinical specialty</li>
+                    <li>3-5+ years clinical experience</li>
+                </ul>
+            </div>
+            <div class="contact-info">
+                <strong>Contact Information:</strong>
+                <div>Search FlexJobs, Indeed, or Glassdoor for "remote utilization review physician"</div>
+            </div>
+            <a href="https://www.flexjobs.com/remote-jobs/utilization-review" target="_blank" rel="noopener noreferrer" class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Apply Now</a>
+            <a href="https://www.glassdoor.com/Job/remote-utilization-review-jobs-SRCH_IL.0,6_IS11047_KO7,25.htm" target="_blank" rel="noopener noreferrer" class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> More Info</a>
+            <div class="interest-buttons">
+                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')" data-job-id="ur-multi-2026"><span class="icon icon-star" aria-hidden="true"></span> Interested</button>
+                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')" data-job-id="ur-multi-2026"><span class="icon icon-x" aria-hidden="true"></span> Not Interested</button>
+            </div>
         </div>
 
         <div class="job-card">
@@ -3363,80 +2689,6 @@
 
             <a href="https://careers.soundphysicians.com" target="_blank" class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Sound Physicians</a>
             <a href="https://careers.ensemblehp.com" target="_blank" class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> Ensemble Health</a>
-        </div>
-
-        <div class="job-card">
-            <div class="job-header">
-                <div class="job-title">Medical Director - Pain/Neuroscience (Specialty Pharma) <span class="job-status new">NEW</span></div>
-                <div class="salary">$270K-$375K/year + Equity</div>
-            </div>
-            <div class="company">Jazz Pharmaceuticals / Regeneron</div>
-            <div class="job-details">
-                <div class="detail-row"><span class="icon icon-pin" aria-hidden="true"></span> Remote (US-based)</div>
-                <div class="detail-row"><span class="icon icon-clock" aria-hidden="true"></span> Full-time</div>
-                <div class="detail-row"><span class="icon icon-monitor" aria-hidden="true"></span> <span class="remote-badge fully-remote">95% Remote</span></div>
-            </div>
-
-            <div class="job-description">
-                <h4><span class="icon icon-target" aria-hidden="true"></span> Role Overview</h4>
-                <p>Lead medical strategy for pain and neuroscience drug portfolios at specialty pharma companies. Jazz has a significant pain portfolio and Regeneron has an active pain/inflammation pipeline. These companies specifically value MDs with clinical pain management experience. Not a sales role.</p>
-
-                <h4><span class="icon icon-money" aria-hidden="true"></span> Compensation & Benefits</h4>
-                <ul>
-                    <li>$270,000 - $375,000 base salary</li>
-                    <li>Annual bonus (20-30%) + equity/RSUs</li>
-                    <li>Specialty pharma benefits package</li>
-                    <li>Limited travel (conferences, 10-15%)</li>
-                </ul>
-
-                <h4><span class="icon icon-clipboard" aria-hidden="true"></span> Key Responsibilities</h4>
-                <ul>
-                    <li>Lead medical strategy for pain/neuroscience portfolio</li>
-                    <li>Support clinical development programs with medical expertise</li>
-                    <li>Oversee medical education and publication planning</li>
-                    <li>Engage KOLs in pain medicine and neuroscience</li>
-                </ul>
-
-                <div class="benefits-highlight">
-                    <strong><span class="icon icon-target" aria-hidden="true"></span> Perfect for Bobby:</strong> PM&R/interventional spine pain management expertise is exactly what these companies seek for their pain portfolios
-                </div>
-            </div>
-
-            <div class="requirements">
-                <h4>Required Qualifications:</h4>
-                <ul>
-                    <li>MD or DO with pain management clinical experience</li>
-                    <li>Board certification (PM&R ideal for pain roles)</li>
-                    <li>Understanding of CNS/pain pharmacology</li>
-                    <li>Pharma experience not required - clinical expertise is the value</li>
-                </ul>
-            </div>
-
-            <div class="contact-info">
-                <strong>Contact Information:</strong>
-                <div>Jazz Pharma: careers.jazzpharma.com</div>
-                <div>Regeneron: careers.regeneron.com</div>
-            </div>
-
-            <div class="interest-buttons">
-                <button class="interest-btn neutral" onclick="markInterest(this, 'interested')"
-                    data-job-id="specialty-pharma-pain-2026">
-                    <span class="icon icon-star" aria-hidden="true"></span> Interested
-                </button>
-                <button class="interest-btn neutral" onclick="markInterest(this, 'not-interested')"
-                    data-job-id="specialty-pharma-pain-2026">
-                    <span class="icon icon-x" aria-hidden="true"></span> Not Interested
-                </button>
-            </div>
-
-            <a href="https://careers.jazzpharma.com" target="_blank" class="apply-link primary"><span class="icon icon-mail" aria-hidden="true"></span> Jazz Pharma</a>
-            <a href="https://careers.regeneron.com" target="_blank" class="apply-link"><span class="icon icon-search" aria-hidden="true"></span> Regeneron</a>
-        </div>
-
-        <!-- PHARMACEUTICAL MD OPPORTUNITIES SECTION -->
-        <div class="new-section new-section--pharma">
-            <span class="icon icon--lg icon-pill" aria-hidden="true"></span> PHARMACEUTICAL & DRUG INDUSTRY MD ROLES - NON-SALES <span class="icon icon--lg icon-pill" aria-hidden="true"></span>
-            <br><small>Remote Physician Roles in Pharma, Biotech & Drug Development - No Sales Required</small>
         </div>
 
         <div class="job-card">
@@ -3941,7 +3193,7 @@
     </div>
 
     <div class="last-updated">
-        <strong>Last Updated:</strong> March 17, 2026 • <strong>Next Update:</strong> March 24, 2026 •
+        <strong>Last Updated:</strong> March 20, 2026 • <strong>Next Update:</strong> March 27, 2026 •
         <strong>Active Jobs:</strong> <span id="total-jobs">39</span> •
         <strong>New This Week:</strong> <span id="new-this-week">7</span> •
         <button onclick="showPreferenceSummary()" class="btn-action btn-action--blue" style="margin-left:10px;"><span class="icon icon-clipboard-check" aria-hidden="true"></span> Share Preferences</button>
@@ -4994,6 +4246,43 @@ Bobby's Job Board System`;
                 observer.observe(card);
             });
         });
+    </script>
+
+    <!-- Back to Top & Offline Banner -->
+    <button class="back-to-top" id="backToTop" aria-label="Back to top">&#8593;</button>
+    <div class="offline-banner" id="offlineBanner">You are offline — showing cached version.</div>
+
+    <script>
+        // Back to top button
+        const backToTopBtn = document.getElementById('backToTop');
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 600) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        }, { passive: true });
+        backToTopBtn.addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Offline detection
+        const offlineBanner = document.getElementById('offlineBanner');
+        function updateOnlineStatus() {
+            offlineBanner.classList.toggle('show', !navigator.onLine);
+        }
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+        updateOnlineStatus();
+
+        // Service Worker registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(function(reg) { console.log('SW registered, scope:', reg.scope); })
+                    .catch(function(err) { console.log('SW registration failed:', err); });
+            });
+        }
     </script>
 </body>
 
